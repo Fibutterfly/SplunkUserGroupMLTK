@@ -1,0 +1,5 @@
+lxc:
+  hosts:
+    docker_lxc:
+      ansible_host: 192.168.2.10
+      ansible_user: root

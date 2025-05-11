@@ -1,0 +1,19 @@
+services:
+  so1:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:9.3.4}
+    container_name: so1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+    env_file:
+      - ./secrets.yml
+    ports:
+      - 8000:8000
+    networks:
+      - splunk_network
+      - default
+    volumes:
+      - /splunk/var/:/opt/splunk/var
+
+networks:
+  splunk_network:
+    internal: true

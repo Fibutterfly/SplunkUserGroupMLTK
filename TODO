@@ -1,12 +1,13 @@
 # presetups
 - [ ] license
-- [ ] secrets
-- [ ] ansible deploy basics
+- [x] secrets
+- [x] ansible deploy basics
 # Splunk to work
 - [ ] init Splunk into docker
 - [ ] install Python Scientific
 - [ ] install MLTK
 - [ ] connect to homeassistant
+    - [ ] mqtt vs push app
 # Presentation
 - [ ] script
 - [ ] figure out the preferred pdf document creation method

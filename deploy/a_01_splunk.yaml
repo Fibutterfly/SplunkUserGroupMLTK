@@ -1,0 +1,61 @@
+---
+- name: Managing Splunk docker
+  hosts: docker_lxc
+
+  tasks:
+    - name: Managing folders
+      ansible.builtin.file:
+        mode: '0755'
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /splunk
+        - /splunk/var
+
+
+    - name: Copying the Splunk AIO docker-compose.yaml
+      ansible.builtin.copy:
+        src: "d_01_docker-compose.yaml"
+        dest: "/splunk/docker-compose.yaml"
+        mode: '0644'
+      notify:
+        - Stop_docker
+        - Rebuild_docker
+        - Restart_docker
+
+    - name: Copying the compose secrets
+      ansible.builtin.copy:
+        src: "secrets.yml"
+        dest: "/splunk/secrets.yml"
+        mode: '0644'
+      notify:
+        - Stop_docker
+        - Rebuild_docker
+        - Restart_docker
+
+  handlers:
+    - name: Stop_docker
+      ansible.builtin.command:
+        cmd: docker compose -f /splunk/docker-compose.yaml down
+        chdir: /splunk
+      # register: stop_splunk
+      # changed_when: stop_splunk.stdout != ""
+      # failed_when: stop_splunk.rc != 0
+
+    - name: Rebuild_docker
+      ansible.builtin.command:
+        cmd: docker compose -f /splunk/docker-compose.yaml build
+        chdir: /splunk
+      # register: rebuild_splunk
+      # changed_when: rebuild_splunk.stdout != ""
+      # failed_when: rebuild_splunk.rc != 0
+      # when: (stop_code.changed | default(false)) or code_service_status.changed
+
+    - name: Restart_docker
+      ansible.builtin.command:
+        cmd: docker compose -f /splunk/docker-compose.yaml up -d
+        chdir: /splunk
+      # register: restart_code
+      # when: (stop_code.changed | default(false)) or code_service_status.changed
+      # changed_when: restart_code.stdout != ""
+      # failed_when: restart_code.rc != 0

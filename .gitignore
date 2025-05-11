@@ -1,0 +1,4 @@
+SplunkUserGroup/**
+deploy/secrets.yml
+.ansible/**
+.vscode/**
