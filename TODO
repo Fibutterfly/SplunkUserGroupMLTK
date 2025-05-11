@@ -1,0 +1,22 @@
+# presetups
+- [ ] license
+- [ ] secrets
+- [ ] ansible deploy basics
+# Splunk to work
+- [ ] init Splunk into docker
+- [ ] install Python Scientific
+- [ ] install MLTK
+- [ ] connect to homeassistant
+# Presentation
+- [ ] script
+- [ ] figure out the preferred pdf document creation method
+    - [ ] marp
+    - [ ] reveal.js
+    - [ ] remark
+    - [ ] pandoc
+    - [ ] beamer
+    - [ ] asciidoc
+    - [ ] restructuredtext
+    - [ ] mdx
+    - [ ] deckset
+    - [ ] powerpoint
