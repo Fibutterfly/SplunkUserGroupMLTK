@@ -3,7 +3,7 @@
 - [x] secrets
 - [x] ansible deploy basics
 # Splunk to work
-- [ ] init Splunk into docker
+- [x] init Splunk into docker
 - [ ] install Python Scientific
 - [ ] install MLTK
 - [ ] connect to homeassistant
