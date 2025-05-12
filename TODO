@@ -5,8 +5,8 @@
 # Splunk to work
 - [x] init Splunk into docker
 - [x] enable hec
-- [ ] install Python Scientific
-- [ ] install MLTK
+- [x] install Python Scientific
+- [x] install MLTK
 - [x] connect to homeassistant
     - [x] mqtt vs push app -> push
 # Presentation

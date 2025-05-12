@@ -14,6 +14,7 @@
         - /splunk/etc
         - /splunk/etc/apps
         - /splunk/etc/apps/HASS_HEC
+        - /splunk/tgz
 
     - name: Copying the Splunk AIO docker-compose.yaml
       ansible.builtin.copy:
@@ -46,7 +47,43 @@
         - Stop_docker
         - Restart_docker
 
+    - name: Copying the Splunk_SA_Scientific_Python_linux_x86_64
+      ansible.builtin.copy:
+        src: "tars/python-for-scientific-computing-for-linux-64-bit_422.tgz"
+        dest: "/splunk/tgz/python.tgz"
+      notify:
+        - Extract_Splunk_SA_Scientific_Python_linux_x86_64
+        - Stop_docker
+        - Restart_docker
+
+    - name: Copying the Splunk_ML_Toolkit app
+      ansible.builtin.copy:
+        src: "tars/splunk-machine-learning-toolkit_550.tgz"
+        dest: "/splunk/tgz/mltk.tgz"
+      notify:
+        - Extract_Splunk_ML_Toolkit
+        - Stop_docker
+        - Restart_docker
+
   handlers:
+    - name: Extract_Splunk_SA_Scientific_Python_linux_x86_64
+      ansible.builtin.unarchive:
+        src: "/splunk/tgz/python.tgz"
+        dest: "/splunk/etc/apps/"
+        remote_src: yes
+        mode: '0755'
+        owner: 41812
+        group: 41812
+
+    - name: Extract_Splunk_ML_Toolkit
+      ansible.builtin.unarchive:
+        src: "/splunk/tgz/mltk.tgz"
+        dest: "/splunk/etc/apps/"
+        remote_src: yes
+        mode: '0755'
+        owner: 41812
+        group: 41812
+
     - name: Stop_docker
       ansible.builtin.command:
         cmd: docker compose -f /splunk/docker-compose.yaml down

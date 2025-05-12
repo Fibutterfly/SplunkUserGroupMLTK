@@ -3,3 +3,8 @@ deploy/secrets.yml
 deploy/a_00_inventory.yaml
 .ansible/**
 .vscode/**
+deploy/apps/Splunk_ML_Toolkit/**
+deploy/apps/Splunk_ML_Toolkit
+deploy/apps/Splunk_SA_Scientific_Python_linux_x86_64/**
+deploy/apps/Splunk_SA_Scientific_Python_linux_x86_64
+deploy/tars/**
