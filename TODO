@@ -4,10 +4,11 @@
 - [x] ansible deploy basics
 # Splunk to work
 - [x] init Splunk into docker
+- [x] enable hec
 - [ ] install Python Scientific
 - [ ] install MLTK
-- [ ] connect to homeassistant
-    - [ ] mqtt vs push app
+- [x] connect to homeassistant
+    - [x] mqtt vs push app -> push
 # Presentation
 - [ ] script
 - [ ] figure out the preferred pdf document creation method

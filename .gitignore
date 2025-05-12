@@ -1,4 +1,5 @@
 SplunkUserGroup/**
 deploy/secrets.yml
+deploy/a_00_inventory.yaml
 .ansible/**
 .vscode/**

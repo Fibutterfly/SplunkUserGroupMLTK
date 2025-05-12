@@ -8,11 +8,14 @@ services:
       - ./secrets.yml
     ports:
       - 8000:8000
+      - 8088:8088
+      - 8089:8089
     networks:
       - splunk_network
       - default
     volumes:
       - /splunk/var/:/opt/splunk/var
+      - /splunk/etc/apps/HASS_HEC/:/opt/splunk/etc/apps/HASS_HEC/
 
 networks:
   splunk_network:

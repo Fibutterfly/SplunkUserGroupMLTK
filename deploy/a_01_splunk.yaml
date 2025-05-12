@@ -11,7 +11,9 @@
       loop:
         - /splunk
         - /splunk/var
-
+        - /splunk/etc
+        - /splunk/etc/apps
+        - /splunk/etc/apps/HASS_HEC
 
     - name: Copying the Splunk AIO docker-compose.yaml
       ansible.builtin.copy:
@@ -31,6 +33,17 @@
       notify:
         - Stop_docker
         - Rebuild_docker
+        - Restart_docker
+
+    - name: Copying the Splunk HEC app
+      ansible.builtin.copy:
+        src: "apps/HASS_HEC"
+        dest: "/splunk/etc/apps/"
+        mode: '0644'
+        owner: 41812
+        group: 41812
+      notify:
+        - Stop_docker
         - Restart_docker
 
   handlers:
