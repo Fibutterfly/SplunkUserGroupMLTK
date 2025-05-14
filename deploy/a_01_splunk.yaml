@@ -15,6 +15,7 @@
         - /splunk/etc/apps
         - /splunk/etc/apps/HASS_HEC
         - /splunk/tgz
+        - /splunk/etc/apps/Valkyr_Presentation_MLTK
 
     - name: Copying the Splunk AIO docker-compose.yaml
       ansible.builtin.copy:
@@ -62,6 +63,17 @@
         dest: "/splunk/tgz/mltk.tgz"
       notify:
         - Extract_Splunk_ML_Toolkit
+        - Stop_docker
+        - Restart_docker
+
+    - name: Copying the Presentation app
+      ansible.builtin.copy:
+        src: "apps/Valkyr_Presentation_MLTK"
+        dest: "/splunk/etc/apps/"
+        mode: '0644'
+        owner: 41812
+        group: 41812
+      notify:
         - Stop_docker
         - Restart_docker
 

@@ -18,6 +18,7 @@ services:
       - /splunk/etc/apps/HASS_HEC/:/opt/splunk/etc/apps/HASS_HEC/
       - /splunk/etc/apps/Splunk_ML_Toolkit/:/opt/splunk/etc/apps/Splunk_ML_Toolkit/
       - /splunk/etc/apps/Splunk_SA_Scientific_Python_linux_x86_64/:/opt/splunk/etc/apps/Splunk_SA_Scientific_Python_linux_x86_64/
+      - /splunk/etc/apps/Valkyr_Presentation_MLTK/:/opt/splunk/etc/apps/Valkyr_Presentation_MLTK/
 
 networks:
   splunk_network:
