@@ -11,6 +11,7 @@
     - [x] mqtt vs push app -> push
 # Presentation
 - [ ] script
+    - [ ] modell elemzése
 - [ ] figure out the preferred pdf document creation method
     - [ ] marp
     - [ ] reveal.js
