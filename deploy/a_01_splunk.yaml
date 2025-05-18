@@ -66,6 +66,15 @@
         - Stop_docker
         - Restart_docker
 
+    - name: Copying the Lookupeditor app
+      ansible.builtin.copy:
+        src: "tars/splunk-app-for-lookup-file-editing_405.tgz"
+        dest: "/splunk/tgz/lookup_editor.tgz"
+      notify:
+        - Extract_lookup_editor
+        - Stop_docker
+        - Restart_docker
+
     - name: Copying the Presentation app
       ansible.builtin.copy:
         src: "apps/Valkyr_Presentation_MLTK"
@@ -81,6 +90,15 @@
     - name: Extract_Splunk_SA_Scientific_Python_linux_x86_64
       ansible.builtin.unarchive:
         src: "/splunk/tgz/python.tgz"
+        dest: "/splunk/etc/apps/"
+        remote_src: yes
+        mode: '0755'
+        owner: 41812
+        group: 41812
+
+    - name: Extract_lookup_editor
+      ansible.builtin.unarchive:
+        src: "/splunk/tgz/lookup_editor.tgz"
         dest: "/splunk/etc/apps/"
         remote_src: yes
         mode: '0755'
