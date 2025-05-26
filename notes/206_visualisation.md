@@ -1,0 +1,1 @@
+Ahhoz, hogy konkrét haszna legyen egy ilyen eszköznek érdemes valamilyen vizualizációt csinálnunk hozzá.
