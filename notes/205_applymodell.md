@@ -23,5 +23,9 @@ Ez így annyira nem használható, dolgozzuk fel.
 
 Ezzel készen van egy modellünk és használtuk. Ahogyan a képen látható már az outliereket meg is találja.
 
+---
+IDE KELL MÉG RAJZ ARRÓL, HOGY ILLESZTEK NORMÁLIS ELOSZLÁST, MI ELFOGADOTT ÉS MI NEM
+
+
 [^1]: https://docs.splunk.com/Documentation/MLApp/5.5.0/User/Understandfitandapply
 [^2]: https://docs.splunk.com/Documentation/MLApp/5.5.0/API/Writeanalgorithmclass
