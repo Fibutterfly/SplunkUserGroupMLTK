@@ -1,0 +1,121 @@
+<form version="1.1" theme="light">
+  <label>MLTK</label>
+  <search id="base_apply">
+    <query>
+      | savedsearch hass_apply_modell domain=$domain$ class=$class$ entity=$entity$ threshold=$threshold$ cnt=$pred_cnt$ span=$span$
+    </query>
+    <earliest>$base_time.earliest$</earliest>
+    <latest>$base_time.latest$</latest>
+  </search>
+  <search base="base_apply" id="stats">
+    <query>
+      | fields - _time
+      | fields + value
+      | stats avg(value) as mu, stdev(value) as sigma
+    </query>
+  </search>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="base_time" searchWhenChanged="false">
+      <label></label>
+      <default>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="class" searchWhenChanged="false">
+      <label>class</label>
+      <initialValue>temperature</initialValue>
+      <fieldForLabel>class</fieldForLabel>
+      <fieldForValue>class</fieldForValue>
+      <search ref="hass_dashboard_input_class"></search>
+    </input>
+    <input type="dropdown" token="domain" searchWhenChanged="false">
+      <label>domain</label>
+      <initialValue>sensor</initialValue>
+      <fieldForLabel>domain</fieldForLabel>
+      <fieldForValue>domain</fieldForValue>
+      <search ref="hass_dashboard_input_domain"></search>
+    </input>
+    <input type="dropdown" token="entity" searchWhenChanged="false">
+      <label>entity</label>
+      <initialValue>0x00124b0029204309</initialValue>
+      <fieldForLabel>name</fieldForLabel>
+      <fieldForValue>id</fieldForValue>
+      <search ref="hass_dashboard_input_entity"></search>
+    </input>
+    <input type="text" token="threshold" searchWhenChanged="false">
+      <label>threshold</label>
+      <default>0.005</default>
+    </input>
+    <input type="text" token="pred_cnt">
+      <label>Pred count</label>
+      <initialValue>18</initialValue>
+    </input>
+    <input type="text" token="span">
+      <label>span</label>
+      <initialValue>80</initialValue>
+    </input>
+    <input type="text" token="first_cnt">
+      <label>sample</label>
+      <initialValue>12</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <viz type="Splunk_ML_Toolkit.OutliersViz">
+        <search base="base_apply">
+          <query>| fields _time, value, lowerBound, upperBound</query>
+        </search>
+        <option name="drilldown">none</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>The datasets first some datapoint's PDF and threshold</title>
+      <chart>
+        <search base="stats">
+          <query>| eval x = mu - 3*sigma
+            | appendpipe [
+               | makeresults count=10000
+               | streamstats count as step, last(x) as x, last(mu) as mu, last(sigma) as sigma
+               | fields - _time
+               | eval x = exact(x + step*0.01)
+            ]
+            | eval y = (1)/(sigma*sqrt(2*pi()))*exp(-1*(pow((x-mu),2))/(2*pow(sigma,2)))
+            | where y &gt; 0.01
+            | fields x,y
+            | eval in_trheshold = y
+            | eval in_trheshold = if(y &gt; $threshold$, y, null())</query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>A minta átlaga</title>
+        <search base="stats">
+          <query>| fields mu</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.000</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>A minta szórása</title>
+        <search base="stats">
+          <query>| fields sigma</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.000</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+      </single>
+    </panel>
+  </row>
+</form>
