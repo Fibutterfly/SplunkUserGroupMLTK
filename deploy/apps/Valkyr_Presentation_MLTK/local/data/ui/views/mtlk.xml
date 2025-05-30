@@ -83,7 +83,7 @@
                | eval x = exact(x + step*0.01)
             ]
             | eval y = (1)/(sigma*sqrt(2*pi()))*exp(-1*(pow((x-mu),2))/(2*pow(sigma,2)))
-            | where y &gt; 0.01
+            | where y &gt; 0.01/2
             | fields x,y
             | eval in_trheshold = y
             | eval in_trheshold = if(y &gt; $threshold$, y, null())</query>
