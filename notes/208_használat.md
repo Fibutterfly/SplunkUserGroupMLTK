@@ -116,4 +116,49 @@ graph TB
 
 ![Példa jó beállításra](208_01_correct_alert_threshold.png)  
 
-Ezt felhasználva létrehozzuk a riasztásokat
+Ezt felhasználva létrehozzuk a riasztásokat. 
+
+```mermaid
+graph TB
+    HASS_Erkely_Outler[["`HASS Erkely Outler
+                          10,30,50 * * * *
+                          -90m@m -10m@m
+                          cnt=0`"]];
+    HASS_Konyha_Outler[["`HASS Konyha Outler
+                          10,30,50 * * * *
+                          -90m@m -10m@m
+                          cnt=0`"]];
+    HASS_furdo_Outler[["`HASS furdo Outler
+                          10,30,50 * * * *
+                          -90m@m -10m@m
+                          cnt=0`"]];
+    HASS_halo_Outler[["`HASS halo Outler
+                          10,30,50 * * * *
+                          -90m@m -10m@m
+                          cnt=0`"]];
+    HASS_Dolgozo_Outler[["`ASS Dolgozo Outler
+                          10,30,50 * * * *
+                          -90m@m -10m@m
+                          cnt=0`"]];
+    hass_apply_modell{{"`hass_apply_modell`"}};
+    hass_entry>"`hass_entry`"];
+    hass_select_data>"`hass_select_data`"];
+    hass_fill_missing>"`hass_fill_missing`"];
+    hass_model_apply_extend_pred>"`hass_model_apply_extend_pred`"];
+    hass_model_apply>"`hass_model_apply`"];
+    hass_clean_pred>"`hass_clean_pred`"]
+
+    hass_entry --> hass_apply_modell;
+    hass_select_data ---> hass_apply_modell;
+    hass_fill_missing ----> hass_apply_modell;
+    hass_model_apply_extend_pred -----> hass_apply_modell;
+    hass_model_apply ------> hass_apply_modell;
+    hass_clean_pred -------> hass_apply_modell;
+    hass_apply_modell --> HASS_Erkely_Outler;
+    hass_apply_modell ---> HASS_Konyha_Outler;
+    hass_apply_modell ----> HASS_furdo_Outler;
+    hass_apply_modell -----> HASS_halo_Outler;
+    hass_apply_modell ------> HASS_Dolgozo_Outler;
+```
+
+Mivel az egész ötlet azért van így felépítve, mert gyors, ezért nem kell annyit gondolkozni, hogy hogyan oszlassuk el időben, igazából ezért a kényelemért csináltuk az egészet.
