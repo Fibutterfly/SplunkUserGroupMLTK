@@ -10,19 +10,19 @@
 - [x] connect to homeassistant
     - [x] mqtt vs push app -> push
 # Presentation
-- [ ] script
+- [x] script
     - [x] modell elemzése
-    - [ ] apply
+    - [x] apply
 - [ ] figure out the preferred pdf document creation method
-    - [ ] marp
+    - [x] marp
     - [ ] reveal.js
-    - [ ] remark
-    - [ ] pandoc
-    - [ ] beamer
-    - [ ] asciidoc
-    - [ ] restructuredtext
-    - [ ] mdx
-    - [ ] deckset
+    - [x] remark
+    - [x] pandoc
+    - [x] beamer
+    - [x] asciidoc
+    - [x] restructuredtext
+    - [x] mdx
+    - [x] deckset
     - [ ] powerpoint
     - [ ] obsidian
     - [ ] Slides for Splunk
