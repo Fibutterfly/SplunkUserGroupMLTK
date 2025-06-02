@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-markdown>
+					<textarea data-template>
+						# ...
+
+						Filep Illés - Valkyr  
+						ifilep@valkyr.hu
+					</textarea>
+				</section>
+				<section>
+					<h1>A probléma</h1>
+					<img src="../presentation/103_03_cylic.png" width="100%">
+					<pre class="mermaid">
+					flowchart TB;
+						data["Adatok jellemzői"];
+						source["Forrás: hőmérők"];
+						cylic["Ciklikusság: nap-éj"];
+						trend["trend: növekvő, tavasz"];
+						goal["Anomáliák észlelése"];
+
+						data --> source;
+						data --> cylic;
+						data --> trend;
+						data --> goal;
+					</pre>
+				</section>
+				<section>
+					<h2>Előfeltélek</h2>
+					<h3>Folytonosság</h3>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<img src="../presentation/103_01_missingvalue.png" alt="Hiányzó értékek illusztráció" style="width: 100%; max-width: 100%;">
+						</div>
+						<div style="flex: 1; padding-left: 15px; box-sizing: border-box;">
+							<pre class="mermaid">
+								flowchart LR;
+									problem["Hiányzó értékek"];
+									cantuse["`Nem lehet null-okon matematikai
+											  műveleteket csinálni`"];
+									subgraph solutions["lehetséges megoldások"];
+										constant["konstans"];
+										prev_value["`előző/következő érték`"];
+										med_val["`valamilyen középérték`"];
+										interpol["`interpolációk
+										- spline
+										- lineáris`"];
+									end;
+									problem --> cantuse;
+									problem --> constant;
+									problem --> prev_value;
+									problem --> med_val;
+									problem --> interpol;
+							</pre>
+						</div>
+					</div>
+				</section>
+				<section>
+					<h1>Lehetséges megoldások</h1>
+
+					<pre class="mermaid">
+						mindmap
+							root(Ciklikus, idősoros adat)
+								Alapvető SPL
+									stats
+									tstats
+									streamstats
+								Gyórsításos SPL
+									Summary index
+									data model + tsats
+									lookup
+								Extra megoldások
+									Streaming statisztikai algoritmusok
+									Machine learning - MLTK/DSDL
+					</pre>
+				</section>
+				<section>
+					<h4>A fájl</h4>
+					<img src="https://mermaid.ink/svg/pako:eNptlNtu4jAQhl_F8jVUhAS6zcVKgXDSloOArlY7oMoQF6xNHMuHqini3ddJKNTbzUUUz_ePZzyT8Qnv84TiEB8kEUf0uNxwZJ8IYsoV08XQ8L1mOUf9lCi1Rc3md9SDCWeakZS9k5Jta59eBfuwIJJkVFOJxoQnKeOHi6BfCWKImdKS7Uy177oQVDmCAayPkqpjniYfoH7Htb8H0dN6vnVsbZjNl9Po0bX6MPi1mM8Gs_XkXxTAKHparSbR7PlHPHBZB3qDdeSEjioyhClhHE2pPubX3IY18uCFadfUBkFkWafnL8gHIkRauMYAlMkyIgsn9NCr6AhioglayHxPlboVdVRTD1YiZRrtCjSSuRHKxW0YWvi58C734adtZ0I0RWUYNwG_0oxhbrQwGo0op_Jz48c192CirCRlVLqgDb3c8MQebEn44drtC_XBnmlHdsymX1z-OlcRwIpkIqWJzdHQ__RlAisjRC41GlKijbyGmNTYg6omyKqofGXqlvpF0IapSTWzMdCXf-8i8WvJa5kCGnA7NbceXCQB9O0s7dGSHspC1yXCDTtaLMGhloY2cEZlRsolPpW-G6yPNKMbHNpPW6E_G7zhZ-sjCP-d59mHm03_cMThC0mVXRlRdipmxA7tTUJ5QmXfVlrjsFvtgMMTfsNhM7jz_U7QbXnfuq1W0PUfGriwms6dF7RbD_fBve8FQcc_N_B7FdNrYJownctpfTdUV8T5L7ItPlQ" height="600vh" width="100%">
+				</section>
+				<section>
+					<h2>Támogatott eloszlások</h2>
+					<p>Elsőnek elemezzük ki ezt a részt:</p>
+					<pre class="mermaid">
+						graph LR
+							A[DensityFunction Class] --> B[Initialization]
+							B --> C[Parameter Handling]
+							C --> D[Distribution Types]
+							C --> E[Thresholds]
+							
+							D --> D1[AUTO]
+							D --> D2[NORMAL]
+							D --> D3[EXPONENTIAL]
+							D --> D4[GAUSSIAN_KDE]
+							D --> D5[BETA]
+					</pre>
+					<p>Most csak a normális eloszlással foglalkozunk.</p>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<pre><code data-trim data-noescape>
+codecs_manager.add_codec(
+	'algos_support.density_function.normal_distribution',
+	'NormalDistribution',
+	SimpleObjectCodec,
+)
+							</code></pre>
+						</div>
+				</section>
+				<section>
+					<h1>fit ág</h1>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<pre class="mermaid">
+								graph LR
+									A[DensityFunction Class]
+									A --> F[Main Methods]
+									F --> F1[fit]
+									F1 --> G[Data Processing]
+									G --> G1[Split by Groups]
+									G --> G2[Fit Distribution]
+									G --> G3[Validate Data]
+							</pre>
+						</div>
+
+					</div>
+					<pre><code data-trim data-noescape>
+def _fit_data(self, distribution, data, mlspl_limits):
+	"""Fit an instance of ProbabilityDistribution over data.
+	Warn if there are too few data points in the data array"""
+	min_data_size = int(mlspl_limits.get('min_data_size_to_fit', 50))
+	if len(data) < min_data_size and not self._warned_on_few_training_data:
+		self._warned_on_few_training_data = True
+		self._warn_on_few_training_data()
+	# To fix the error of object not having "_exclude_dist" attribute, when partial_fit is used on a smaller dataset and with an earlier version of MLTK (<=5.3.0)
+	self._exclude_dist = self._exclude_dist if hasattr(self, '_exclude_dist') else None
+	distribution.fit(data.values, self._metric, self._exclude_dist)
+	self._warn_on_dist_name_mismatches_threshold(distribution.get_name(), self._threshold)
+	self._distance = distribution.distance
+					</code></pre>
+				</section>
+				<section>
+					<h2>FIT ág következtetései</h2>
+					<pre class="mermaid">
+						flowchart LR;
+							code_min{"`min 50`"};
+							imp_min["Egy csoportban legalább 50"];
+							imp_min2["80m"];
+							code_min --> imp_min;
+							imp_min --> imp_min2;
+					</pre>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<img src="../notes/202_01_bins.png">
+						</div>
+						<div style="flex: 1;">
+							<img src="../notes/202_02_result.png">
+						</div>
+					</div>
+					
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script type="module">
+			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+			mermaid.initialize({ startOnLoad: true });
+		</script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				width: 960,
+  				height: 700,
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
