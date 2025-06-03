@@ -174,6 +174,196 @@ def _fit_data(self, distribution, data, mlspl_limits):
 					</div>
 					
 				</section>
+				<section>
+					<h1>Konfiguráció</h1>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<img src="../notes/204_01_mltksettings.png" style="width: 100%;">
+						</div>
+						<div style="flex: 1;">
+							<p>mlspl.conf</p>
+							<pre><code data-trim data-noescape style="font-size: 0.9em;">
+[default]
+handle_new_cat = &lt;string&gt;
+max_distinct_cat_values = &lt;int&gt;
+...
+[DensityFunction]
+default_prob_threshold = &lt;float&gt;
+max_fields_in_by_clause = &lt;int&gt;
+max_groups = &lt;int&gt;
+* defaults to 1024
+...
+[score:pairwise]
+max_fields = &lt;int&gt;
+* default to 50
+							</code></pre>
+						</div>
+					</div>
+				</section>
+				<section>
+					<h3>| apply</h3>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<pre class="mermaid">
+								graph TB
+									A[DensityFunction Class]
+									
+									A --> F[Main Methods]
+									F --> F3[apply]
+									
+									
+									F3 --> H[Output Generation]
+									H --> H1[IsOutlier]
+									H --> H2[BoundaryRanges]
+									H --> H3[ProbabilityDensity]
+									H --> H4[SampledValue]
+							</pre>
+						</div>
+						<div style="flex: 1;">
+							<img src="../notes/205_01_apply.png">
+						</div>
+					</div>
+				</section>
+				<section>
+					<h3>| apply</h3>
+					<img src="../notes/205_02_apply.png">
+					<img src="../notes/205_03_normalpdf.png">
+				</section>
+				<section>
+					<h3>Vizualizáció</h3>
+					<img src="../notes/206_01_viz.png">
+				</section>
+				<section>
+					<h3>Predikció</h3>
+					<img src="../notes/206_02_pred.png">
+					<img src="../notes/206_03_pred_dashboard.png">
+				</section>
+				<section>
+					<h3>Threshold paraméter</h3>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<p>$\alpha=0.05$</p>
+							<img src="../notes/207_01_thershold_005.png">
+						</div>
+						<div style="flex: 1;">
+							<p>$\alpha=0.1$</p>
+							<img src="../notes/207_02_thershold_01.png">
+						</div>
+					</div>
+				</section>
+				<section>
+					<h3>Használat</h3>
+					<pre class="mermaid">
+					graph TB
+						hasss_build_model_furdo[["`hasss_build_model_furdo
+												20 1 */1 * *`"]];
+						hasss_build_model_halo[["`hasss_build_model_halo
+												40 2 */2 * *`"]];
+						hasss_build_model_konyha[["`hasss_build_model_konyha
+													0 4 */3 * *`"]];
+						hasss_build_model_dolgozo[["`hasss_build_model_dolgozo
+													20 5 */4 * *`"]];
+						hass_build_model{{"`hass_build_model`"}};
+						hass_entry>"`hass_entry`"];
+						hass_select_data>"`hass_select_data`"];
+						hass_fill_missing>"`hass_fill_missing`"];
+						hass_model_builder>"`hass_model_builder`"];
+
+						hass_build_model --> hasss_build_model_furdo;
+						hass_build_model ---> hasss_build_model_halo;
+						hass_build_model ----> hasss_build_model_konyha;
+						hass_build_model -----> hasss_build_model_dolgozo;
+						hass_entry --> hass_build_model;
+						hass_select_data --> hass_build_model;
+						hass_fill_missing --> hass_build_model;
+						hass_model_builder --> hass_build_model;						
+					</pre>
+				</section>
+				<section>
+					<h3>Model építés példák</h3>
+							<pre><code  data-trim data-noescape style="font-size: 0.9em;">
+[hass_build_model]
+search = `hass_entry("$domain$","$class$","$entity$")`\
+`hass_select_data`\
+`hass_fill_missing($span$m)`\
+`hass_model_builder("$domain$","$class$","$entity$",$threshold$)`
+							</code></pre>
+							<pre><code  data-trim data-noescape style="font-size: 0.9em;">
+[hasss_build_model_dolgozo]
+cron_schedule = 20 5 */4 * *
+search = | savedsearch hass_build_model domain=sensor \
+class=temperature entity=0x00124b0029197748 threshold=0.005 span=80
+enableSched = 1
+schedule_window = auto
+							</code></pre>
+				</section>
+				<section>
+					<h3>Riasztás</h3>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+
+							<pre class="mermaid">
+								graph TB
+									decision_1{"`Milyen
+												sűrű a 
+												modellünk?`"}
+									hystering["Hiszterizálás"];
+									threshold["Magas threshold"];
+
+									decision_1 --"Eléggé<br>(legalább félóránként)"--> hystering;
+									decision_1 --"Több, mint félóránként van<br>1 adatpont"--> threshold;
+							</pre>
+						</div>
+						<div style="flex: 1;">
+							<img src="../notes/208_01_correct_alert_threshold.png">
+						</div>
+					</div>
+				</section>
+				<section>
+					<h3>Riasztás gráf</h3>
+					<pre class="mermaid">
+						graph TB
+							HASS_Erkely_Outler[["`HASS Erkely Outler
+												10,30,50 * * * *
+												-90m@m -10m@m
+												cnt=0`"]];
+							HASS_Konyha_Outler[["`HASS Konyha Outler
+												10,30,50 * * * *
+												-90m@m -10m@m
+												cnt=0`"]];
+							HASS_furdo_Outler[["`HASS furdo Outler
+												10,30,50 * * * *
+												-90m@m -10m@m
+												cnt=0`"]];
+							HASS_halo_Outler[["`HASS halo Outler
+												10,30,50 * * * *
+												-90m@m -10m@m
+												cnt=0`"]];
+							HASS_Dolgozo_Outler[["`ASS Dolgozo Outler
+												10,30,50 * * * *
+												-90m@m -10m@m
+												cnt=0`"]];
+							hass_apply_modell{{"`hass_apply_modell`"}};
+							hass_entry>"`hass_entry`"];
+							hass_select_data>"`hass_select_data`"];
+							hass_fill_missing>"`hass_fill_missing`"];
+							hass_model_apply_extend_pred>"`hass_model_apply_extend_pred`"];
+							hass_model_apply>"`hass_model_apply`"];
+							hass_clean_pred>"`hass_clean_pred`"]
+
+							hass_entry --> hass_apply_modell;
+							hass_select_data --> hass_apply_modell;
+							hass_fill_missing --> hass_apply_modell;
+							hass_model_apply_extend_pred --> hass_apply_modell;
+							hass_model_apply --> hass_apply_modell;
+							hass_clean_pred --> hass_apply_modell;
+							hass_apply_modell --> HASS_Erkely_Outler;
+							hass_apply_modell ---> HASS_Konyha_Outler;
+							hass_apply_modell ----> HASS_furdo_Outler;
+							hass_apply_modell -----> HASS_halo_Outler;
+							hass_apply_modell ------> HASS_Dolgozo_Outler;
+					</pre>
+				</section>
 			</div>
 		</div>
 
@@ -185,6 +375,7 @@ def _fit_data(self, distribution, data, mlspl_limits):
 			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 			mermaid.initialize({ startOnLoad: true });
 		</script>
+		<script src="plugin/math/math.js"></script>
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
@@ -194,7 +385,7 @@ def _fit_data(self, distribution, data, mlspl_limits):
 				width: 960,
   				height: 700,
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
 			});
 		</script>
 	</body>
