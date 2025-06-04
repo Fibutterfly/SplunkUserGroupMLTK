@@ -8,7 +8,8 @@
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="dist/theme/dracula.css"> 
+		<!--  <link rel="stylesheet" href="dist/theme/serif.css"> -->
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
@@ -18,7 +19,7 @@
 			<div class="slides">
 				<section data-markdown>
 					<textarea data-template>
-						# ...
+						#### Prediktív elemzés ciklikus adatokon Splunk MLTK segítségével
 
 						Filep Illés - Valkyr  
 						ifilep@valkyr.hu
@@ -72,7 +73,7 @@
 					</div>
 				</section>
 				<section>
-					<h1>Lehetséges megoldások</h1>
+					<h2>Lehetséges megoldások</h2>
 
 					<pre class="mermaid">
 						mindmap
@@ -123,7 +124,7 @@ codecs_manager.add_codec(
 						</div>
 				</section>
 				<section>
-					<h1>fit ág</h1>
+					<h2>fit ág</h2>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 							<pre class="mermaid">
@@ -139,7 +140,7 @@ codecs_manager.add_codec(
 						</div>
 
 					</div>
-					<pre><code data-trim data-noescape>
+					<pre><code data-trim data-noescape style="font-size: 0.7em;">
 def _fit_data(self, distribution, data, mlspl_limits):
 	"""Fit an instance of ProbabilityDistribution over data.
 	Warn if there are too few data points in the data array"""
@@ -201,7 +202,7 @@ max_fields = &lt;int&gt;
 					</div>
 				</section>
 				<section>
-					<h3>| apply</h3>
+					<h4>| apply</h4>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 							<pre class="mermaid">
@@ -252,17 +253,17 @@ max_fields = &lt;int&gt;
 					</div>
 				</section>
 				<section>
-					<h3>Használat</h3>
+					<h4>Használat</h4>
 					<pre class="mermaid">
 					graph TB
 						hasss_build_model_furdo[["`hasss_build_model_furdo
-												20 1 */1 * *`"]];
+												20 1 * * *`"]];
 						hasss_build_model_halo[["`hasss_build_model_halo
-												40 2 */2 * *`"]];
+												40 2 2,4.. * *`"]];
 						hasss_build_model_konyha[["`hasss_build_model_konyha
-													0 4 */3 * *`"]];
+													0 4 3,6... * *`"]];
 						hasss_build_model_dolgozo[["`hasss_build_model_dolgozo
-													20 5 */4 * *`"]];
+													20 5 4,8... * *`"]];
 						hass_build_model{{"`hass_build_model`"}};
 						hass_entry>"`hass_entry`"];
 						hass_select_data>"`hass_select_data`"];
@@ -298,7 +299,7 @@ schedule_window = auto
 							</code></pre>
 				</section>
 				<section>
-					<h3>Riasztás</h3>
+					<h4>Riasztás</h4>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 
@@ -362,6 +363,143 @@ schedule_window = auto
 							hass_apply_modell ----> HASS_furdo_Outler;
 							hass_apply_modell -----> HASS_halo_Outler;
 							hass_apply_modell ------> HASS_Dolgozo_Outler;
+					</pre>
+				</section>
+				<section>
+					<h3>Mire lehet még használni?</h3>
+					<pre class="mermaid">
+						flowchart LR
+							log_count["logok darabszáma"];
+							firewall>"tűzfal"];
+							EDR>"EDR"];
+							email>"email"];
+							db_query>"Adatbázis kérések"];
+							rest>"Rest Api kérések"];
+							event_lenght["Események hossza"];
+							session>"sessionok"];
+							CPU_usage>"CPU használat"];
+							ticket>"hiba bejelentések"];
+
+							firewall --> log_count;
+							EDR --> log_count;
+							email --> log_count;
+							db_query --> log_count;
+							rest --> log_count;
+							session --> log_count;
+							ticket --> log_count;
+
+							db_query --> event_lenght;
+							CPU_usage --> event_lenght;
+							session --> event_lenght;
+					</pre>
+				</section>
+				<section>
+					<h4>MLTK felhasználásai</h4>
+					<pre class="mermaid">
+						mindmap
+							root((MLTK))
+								Adat előkészítés
+								Adatelemzés
+								Kluszterizálás
+								Előrejelzés
+								Pontbecslés
+								Outlier detektálás
+					</pre>
+				</section>
+				<section>
+					<h3>MLTK felhasználásai</h3>
+					<h4>Adat előkészítés</h4>
+					<pre class="mermaid">
+						mindmap
+							root(Adat előkészítés)
+								Preprocesing
+									Imputer
+									Robust Scaler
+									Standard Scaler
+								Feature Extraction
+									lineáris
+									PCA
+									HashingVectorizer
+									ICA
+									nem-lineáris
+									KernelPCA
+									TFIDF
+									NPR
+					</pre>
+				</section>
+				<section>
+					<h3>MLTK felhasználásai</h3>
+					<h4>Adat elemzés és előrejelzés</h4>
+					<pre class="mermaid">
+						mindmap
+						root(Idősor elemzés)
+							Adatelemzés
+								Autocorrelation function
+								Partial autocorrelation Function
+							Előrejelzés
+								ARIMA
+								KalmanFilter
+								StateSpaceForecast
+					</pre>
+				</section>
+				<section>
+					<h3>MLTK felhasználásai</h3>
+					<h4>Minta elemzés</h4>
+					<pre class="mermaid">
+						mindmap
+							root(Minta elemzés)
+								Kluszterizálás
+									Partíció alapú - XMeans
+									Távolság alapú -KMeans		
+									Gráf alapú - SpectralClustering
+									Hiearhia alapú - Birch
+									Sűrűség alapú - DBSCAN
+								Outlier detektálás
+								DensityFunction
+								LocalOutlierFactor
+								OneClassSVM
+					</pre>
+
+				</section>
+				<section>
+					<h3>MLTK felhasználásai</h3>
+					<h4>Regressziók - Számokra</h4>
+					<pre class="mermaid">
+						mindmap
+							root(Szám-regresszió)
+								Lineáris
+									LinearRegression
+									Ridge
+									Lasso
+									ElasticNet
+									SDGRegressor
+								Nem-lineárs
+									Fa alapú
+										DecisionTree
+										GradientBoosting
+										RandomForest
+									Kernel alapú
+										KernelRidge
+					</pre>
+				</section>
+				<section>
+					<h3>MLTK felhasználásai</h3>
+					<h4>Címkéző algoritmusok</h4>
+					<pre class="mermaid">
+						mindmap
+							root(Osztály-klasszifikáló)
+								Lineáris
+									LogisticRegression
+									SGD
+									SVM
+								Naive bayes
+									BernoulliNB
+									GaussianNB
+								Fa alapú
+									DecisionTree
+									GradientBoosting
+									RandomForest
+								Neurális háló - MLP
 					</pre>
 				</section>
 			</div>

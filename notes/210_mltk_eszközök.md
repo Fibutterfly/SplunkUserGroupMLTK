@@ -82,9 +82,6 @@ mindmap
     Előrejelzés
     Pontbecslés
     Outlier detektálás
-      DensityFunction
-      LocalOutlierFactor
-      OneClassSVM
 ```
 
 Az első lépés az az adatelőkészítése, hogy a machine algoritmust tudjuk használni. Ezt rendszerint egyéb SPL parancsokkal érdemes csinálni, viszont valamennyi gyakran használt, algoritmust a kezünkbe ad.  
@@ -126,18 +123,17 @@ Iparban más előrejelző modellek általában deep-learning alapúak és hatalm
 A következő blokk, amelyről beszélni kéne azok az algoritmusok, amelyek képesek mintákat kiemelni a megmutatott adatokból.
 ```mermaid
 mindmap
-  root(Minta elemzás)
+  root(Minta elemzés)
     Kluszterizálás
-        Partíció alapú
-            KMeans
-            XMeans
-        Gráf alapú - SpectralClustering
-        Hiearhia alapú - Birch
-        Sűrűség alapú - DBSCAN
+      Partíció alapú - XMeans
+      Távolság alapú -KMeans		
+      Gráf alapú - SpectralClustering
+      Hiearhia alapú - Birch
+      Sűrűség alapú - DBSCAN
     Outlier detektálás
-        DensityFunction
-        LocalOutlierFactor
-        OneClassSVM
+    DensityFunction
+    LocalOutlierFactor
+    OneClassSVM
 ```
 Az általunk használt outlier detkroként címkézett DesintyFunction modell is ide tartozik, ezek gyakran használt algoritmusok, más modellek alapköveiként is.  
 
