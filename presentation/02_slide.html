@@ -1,0 +1,19 @@
+							<pre class="mermaid">
+								flowchart LR;
+									problem["Hiányzó értékek"];
+									cantuse["`Nem lehet null-okon matematikai
+											  műveleteket csinálni`"];
+									subgraph solutions["lehetséges megoldások"];
+										constant["konstans"];
+										prev_value["`előző/következő érték`"];
+										med_val["`valamilyen középérték`"];
+										interpol["`interpolációk
+										- spline
+										- lineáris`"];
+									end;
+									problem --> cantuse;
+									problem --> constant;
+									problem --> prev_value;
+									problem --> med_val;
+									problem --> interpol;
+							</pre>

@@ -13,8 +13,20 @@
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<style>
+			#slide-logo {
+				position: fixed;
+				top: 12px;
+				left: 12px;
+				height: 48px;      /* Adjust as needed */
+				width: auto;
+				z-index: 1000;     /* Ensure it's above other content */
+				pointer-events: none; /* So it doesn't block slide navigation */
+				}
+		</style>
 	</head>
 	<body>
+		<img id="slide-logo" src="../presentation/valkyr-logo.png" alt="Logo" />
 		<div class="reveal">
 			<div class="slides">
 				<section data-markdown>
@@ -28,89 +40,127 @@
 				<section>
 					<h1>A probléma</h1>
 					<img src="../presentation/103_03_cylic.png" width="100%">
-					<pre class="mermaid">
-					flowchart TB;
-						data["Adatok jellemzői"];
-						source["Forrás: hőmérők"];
-						cylic["Ciklikusság: nap-éj"];
-						trend["trend: növekvő, tavasz"];
-						goal["Anomáliák észlelése"];
+					<img src="../presentation/01_slide.svg">
 
-						data --> source;
-						data --> cylic;
-						data --> trend;
-						data --> goal;
-					</pre>
+					<aside class="notes">
+						<ul>
+							<li></li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h2>Előfeltélek</h2>
 					<h3>Folytonosság</h3>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
-							<img src="../presentation/103_01_missingvalue.png" alt="Hiányzó értékek illusztráció" style="width: 100%; max-width: 100%;">
+							<pre><code data-trim data-noescape style="font-size: 0.6em;">
+`hass_entry("sensor","temperature","0x00124b0029204309")`
+`hass_select_data`
+| bin span=1m _time
+| where value!="unavailable"
+| stats count by _time, value
+| makecontinuous _time span=1m
+							</code>
+							<table>
+								<tr>
+									<td>_time</td>
+									<td>value</td>
+									<td>count</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 19:58</td>
+									<td>0</td>
+									<td>1</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 19:59</td>
+									<td>14.13</td>
+									<td>1</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>14.01</td>
+									<td>1</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:01</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:02</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:03</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:04</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:05</td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:06</td>
+									<td>13.89</td>
+									<td>1</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:07</td>
+									<td></td>
+									<td></td>
+								</tr>
+							</table>
 						</div>
 						<div style="flex: 1; padding-left: 15px; box-sizing: border-box;">
-							<pre class="mermaid">
-								flowchart LR;
-									problem["Hiányzó értékek"];
-									cantuse["`Nem lehet null-okon matematikai
-											  műveleteket csinálni`"];
-									subgraph solutions["lehetséges megoldások"];
-										constant["konstans"];
-										prev_value["`előző/következő érték`"];
-										med_val["`valamilyen középérték`"];
-										interpol["`interpolációk
-										- spline
-										- lineáris`"];
-									end;
-									problem --> cantuse;
-									problem --> constant;
-									problem --> prev_value;
-									problem --> med_val;
-									problem --> interpol;
-							</pre>
+							<img src="../presentation/02_slide.svg">
 						</div>
+						<aside class="notes">
+							<ul>
+								<li>A nullokon nem tudunk műveleteket végezni</li>
+								<li>Valahogyan kezelni kell</li>
+							</ul>
+						</aside>
 					</div>
 				</section>
 				<section>
 					<h2>Lehetséges megoldások</h2>
 
-					<pre class="mermaid">
-						mindmap
-							root(Ciklikus, idősoros adat)
-								Alapvető SPL
-									stats
-									tstats
-									streamstats
-								Gyórsításos SPL
-									Summary index
-									data model + tsats
-									lookup
-								Extra megoldások
-									Streaming statisztikai algoritmusok
-									Machine learning - MLTK/DSDL
-					</pre>
+					<img src="../presentation/03_slide.svg">
+					<aside class="notes">
+						<ul>
+							<li>Alapvető és gyorsításos módszerekkel a gond, hogy minden adatot mindig felkell olvasni</li>
+							<li>streaming jó megoldás, nagyon, de bonyolult és kicsi a flexibilitás, lásd Dataflow model és Apache Beam/Flink</li>
+							<ul>
+								<li>Splunkban summary indexekkel tudunk ilyeneket</li>
+							</ul>
+							<li>Mi az MLTK-ról fogunk beszélni</li>
+							<li>A legésszerűbb megoldás több ötlet kombinációja lenne</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h4>A fájl</h4>
-					<img src="https://mermaid.ink/svg/pako:eNptlNtu4jAQhl_F8jVUhAS6zcVKgXDSloOArlY7oMoQF6xNHMuHqini3ddJKNTbzUUUz_ePZzyT8Qnv84TiEB8kEUf0uNxwZJ8IYsoV08XQ8L1mOUf9lCi1Rc3md9SDCWeakZS9k5Jta59eBfuwIJJkVFOJxoQnKeOHi6BfCWKImdKS7Uy177oQVDmCAayPkqpjniYfoH7Htb8H0dN6vnVsbZjNl9Po0bX6MPi1mM8Gs_XkXxTAKHparSbR7PlHPHBZB3qDdeSEjioyhClhHE2pPubX3IY18uCFadfUBkFkWafnL8gHIkRauMYAlMkyIgsn9NCr6AhioglayHxPlboVdVRTD1YiZRrtCjSSuRHKxW0YWvi58C734adtZ0I0RWUYNwG_0oxhbrQwGo0op_Jz48c192CirCRlVLqgDb3c8MQebEn44drtC_XBnmlHdsymX1z-OlcRwIpkIqWJzdHQ__RlAisjRC41GlKijbyGmNTYg6omyKqofGXqlvpF0IapSTWzMdCXf-8i8WvJa5kCGnA7NbceXCQB9O0s7dGSHspC1yXCDTtaLMGhloY2cEZlRsolPpW-G6yPNKMbHNpPW6E_G7zhZ-sjCP-d59mHm03_cMThC0mVXRlRdipmxA7tTUJ5QmXfVlrjsFvtgMMTfsNhM7jz_U7QbXnfuq1W0PUfGriwms6dF7RbD_fBve8FQcc_N_B7FdNrYJownctpfTdUV8T5L7ItPlQ" height="600vh" width="100%">
+					<img src="../presentation/04_slide.svg" height="600vh" width="100%">
+					<aside class="notes">
+						<ul>
+							<li>remélem ijesztő</li>
+							<li>akkor bontsuk részekre inkább</li>
+							<li>Ez a DensityFunction.py fájl az MLTK-ban</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h2>Támogatott eloszlások</h2>
+					<h3>Támogatott eloszlások</h3>
 					<p>Elsőnek elemezzük ki ezt a részt:</p>
-					<pre class="mermaid">
-						graph LR
-							A[DensityFunction Class] --> B[Initialization]
-							B --> C[Parameter Handling]
-							C --> D[Distribution Types]
-							C --> E[Thresholds]
-							
-							D --> D1[AUTO]
-							D --> D2[NORMAL]
-							D --> D3[EXPONENTIAL]
-							D --> D4[GAUSSIAN_KDE]
-							D --> D5[BETA]
-					</pre>
+					<img src="../presentation/05_slide.svg">
 					<p>Most csak a normális eloszlással foglalkozunk.</p>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
@@ -122,23 +172,22 @@ codecs_manager.add_codec(
 )
 							</code></pre>
 						</div>
+					<aside class="notes">
+						<ul>
+							<li>Van 1 csomó eloszlás</li>
+							<li>Mi tudjuk, hogy normálisat fogunk használni</li>
+							<li>Thresholdokról később fogok beszélni</li>
+							<li>ez egy algos_support/density_function/normal_distribution.py-re mutat</li>
+							<li>Abban a fájlban csak egy wrapper script van a scipy.stats.norm-hoz</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h2>fit ág</h2>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
-							<pre class="mermaid">
-								graph LR
-									A[DensityFunction Class]
-									A --> F[Main Methods]
-									F --> F1[fit]
-									F1 --> G[Data Processing]
-									G --> G1[Split by Groups]
-									G --> G2[Fit Distribution]
-									G --> G3[Validate Data]
-							</pre>
+							<img src="../presentation/06_slide.svg">
 						</div>
-
 					</div>
 					<pre><code data-trim data-noescape style="font-size: 0.7em;">
 def _fit_data(self, distribution, data, mlspl_limits):
@@ -154,26 +203,166 @@ def _fit_data(self, distribution, data, mlspl_limits):
 	self._warn_on_dist_name_mismatches_threshold(distribution.get_name(), self._threshold)
 	self._distance = distribution.distance
 					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>látszódik, hogy > 50 adatpont kell</li>
+							<li>ez nekünk 80m-es csoportosítást fog jelenteni</li>
+							<li>a fit állítja elő a modellt, amit lefogunk menteni</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h2>FIT ág következtetései</h2>
-					<pre class="mermaid">
-						flowchart LR;
-							code_min{"`min 50`"};
-							imp_min["Egy csoportban legalább 50"];
-							imp_min2["80m"];
-							code_min --> imp_min;
-							imp_min --> imp_min2;
-					</pre>
+					<img src="../presentation/07_slide.svg">
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
-							<img src="../notes/202_01_bins.png">
+							<pre><code style="font-size: 0.7em;">
+`hass_entry("sensor","temperature","0x00124b0029204309")`
+`hass_select_data`
+`hass_fill_missing(80m)`
+| eval minutebin=strftime(_time,"%M")
+| eval hourbin=strftime(_time,"%H") 
+| eval bin=printf(hourbin."-".minutebin)
+| stats count by bin
+							</code></pre>
+							<table style="font-size: 0.5em;">
+								<tr>
+									<td>bin</td>
+									<td>count</td>
+								</tr>
+								<tr>
+									<td>00-00</td>
+									<td>79</td>
+								</tr>
+								<tr>
+									<td>01-20</td>
+									<td>82</td>
+								</tr>
+								<tr>
+									<td>02-40</td>
+									<td>101</td>
+								</tr>
+								<tr>
+									<td>04-00</td>
+									<td>105</td>
+								</tr>
+								<tr>
+									<td>05-20</td>
+									<td>109</td>
+								</tr>
+					
+							</table>
 						</div>
 						<div style="flex: 1;">
-							<img src="../notes/202_02_result.png">
-						</div>
+							<pre><code style="font-size: 0.7em;">
+`hass_entry("sensor","temperature","0x00124b0029197748")`
+`hass_select_data`
+`hass_fill_missing(80m)`
+| eval minutebin=strftime(_time,"%M")
+| eval hourbin=strftime(_time,"%H") 
+| fit DensityFunction value by "hourbin,minutebin"
+dist=norm threshold=0.005
+							</code></pre>
+							<table style="font-size: 0.4em;">
+								<tr>
+									<td>_time</td>
+									<td>value</td>
+									<td>minutebin</td>
+									<td>hourbin</td>
+									<td>IsOutlier(value)</td>
+									<td>BoundaryRanges</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 18:40</td>
+									<td>0.0</td>
+									<td>40</td>
+									<td>18</td>
+									<td>1.0</td>
+									<td>-Infinity:16.683:0.0025<br>32.14:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 18:40</td>
+									<td>23.09</td>
+									<td>40</td>
+									<td>18</td>
+									<td>0.0</td>
+									<td>-Infinity:16.683:0.0025<br>32.14:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>22.91</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>22.94</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>23.0</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>23.03</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>23.06</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>23.08</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>23.09</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+								<tr>
+									<td>2025-05-12 20:00</td>
+									<td>23.1</td>
+									<td>0</td>
+									<td>20</td>
+									<td>0.0</td>
+									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
+								</tr>
+							</table>						</div>
 					</div>
-					
+					<aside class="notes">
+						<ul>
+							<li>látszódik, hogy > 50 adatpont kell</li>
+							<li>ez nekünk 80m-es csoportosítást fog jelenteni</li>
+							<li>14 napra nézünk vissza</li>
+							<li>a fit állítja elő a modellt, amit lefogunk menteni</li>
+							<li>A szintaktikája még SPL-hez képest is bizar</li>
+						</ul>
+					</aside>					
 				</section>
 				<section>
 					<h1>Konfiguráció</h1>
@@ -511,7 +700,20 @@ schedule_window = auto
 		<script src="plugin/highlight/highlight.js"></script>
 		<script type="module">
 			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-			mermaid.initialize({ startOnLoad: true });
+			mermaid.initialize({	
+									securityLevel: 'loose',
+									theme: 'base',
+									themeVariables: {
+											nodeBorder: '#BB2528',
+											nodeTextColor: '#F8F8F2',
+											mainBkg: '#373c57',
+											lineColor: '#FF79C6',
+											edgeLabelBackground: '#44475A',
+											tertiaryColor: '#ffff',
+											secondaryColor: '#ffff',
+											primaryColor: '#ffff'
+										}
+			 });
 		</script>
 		<script src="plugin/math/math.js"></script>
 		<script>
@@ -522,6 +724,12 @@ schedule_window = auto
 				hash: true,
 				width: 960,
   				height: 700,
+				slideNumber: true,
+				preloadIframes: true,
+				margin: 0.04,
+				minScale: 0.2,
+ 				maxScale: 1.0,
+				center: true,
 				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
 			});
