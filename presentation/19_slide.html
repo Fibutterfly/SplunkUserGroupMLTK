@@ -1,0 +1,25 @@
+					<pre class="mermaid">
+						flowchart TB
+							log_count["logok darabszáma"];
+							firewall>"tűzfal"];
+							EDR>"EDR"];
+							email>"email"];
+							db_query>"Adatbázis kérések"];
+							rest>"Rest Api kérések"];
+							event_lenght["Események hossza"];
+							session>"sessionok"];
+							CPU_usage>"CPU használat"];
+							ticket>"hiba bejelentések"];
+
+							firewall --> log_count;
+							EDR --> log_count;
+							email --> log_count;
+							db_query --> log_count;
+							rest --> log_count;
+							session --> log_count;
+							ticket --> log_count;
+
+							db_query --> event_lenght;
+							CPU_usage --> event_lenght;
+							session --> event_lenght;
+					</pre>

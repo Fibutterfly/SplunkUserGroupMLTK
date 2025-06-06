@@ -1,0 +1,11 @@
+							<pre class="mermaid">
+								graph TB
+									decision_1{"`Milyen
+												sűrű a 
+												modellünk?`"}
+									hystering["Hiszterizálás"];
+									threshold["Magas threshold"];
+
+									decision_1 --"Eléggé<br>(legalább félóránként)"--> hystering;
+									decision_1 --"Több, mint félóránként van<br>1 adatpont"--> threshold;
+							</pre>

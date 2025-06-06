@@ -1,0 +1,25 @@
+					<pre class="mermaid">
+					graph TB
+						hasss_build_model_furdo[["`hasss_build_model_furdo
+												20 1 * * *`"]];
+						hasss_build_model_halo[["`hasss_build_model_halo
+												40 2 2,4.. * *`"]];
+						hasss_build_model_konyha[["`hasss_build_model_konyha
+													0 4 3,6... * *`"]];
+						hasss_build_model_dolgozo[["`hasss_build_model_dolgozo
+													20 5 4,8... * *`"]];
+						hass_build_model{{"`hass_build_model`"}};
+						hass_entry>"`hass_entry`"];
+						hass_select_data>"`hass_select_data`"];
+						hass_fill_missing>"`hass_fill_missing`"];
+						hass_model_builder>"`hass_model_builder`"];
+
+						hass_build_model --> hasss_build_model_furdo;
+						hass_build_model ---> hasss_build_model_halo;
+						hass_build_model ----> hasss_build_model_konyha;
+						hass_build_model -----> hasss_build_model_dolgozo;
+						hass_entry --> hass_build_model;
+						hass_select_data --> hass_build_model;
+						hass_fill_missing --> hass_build_model;
+						hass_model_builder --> hass_build_model;						
+					</pre>

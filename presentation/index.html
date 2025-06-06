@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>MLTK - Valkyr</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -23,6 +23,10 @@
 				z-index: 1000;     /* Ensure it's above other content */
 				pointer-events: none; /* So it doesn't block slide navigation */
 				}
+			code {
+				overflow: hidden !important;
+				max-height: none !important;
+			}
 		</style>
 	</head>
 	<body>
@@ -31,7 +35,7 @@
 			<div class="slides">
 				<section data-markdown>
 					<textarea data-template>
-						#### Prediktív elemzés ciklikus adatokon Splunk MLTK segítségével
+						# Prediktív elemzés ciklikus adatokon Splunk MLTK segítségével
 
 						Filep Illés - Valkyr  
 						ifilep@valkyr.hu
@@ -40,7 +44,7 @@
 				<section>
 					<h1>A probléma</h1>
 					<img src="../presentation/103_03_cylic.png" width="100%">
-					<img src="../presentation/01_slide.svg">
+					<img src="../presentation/01_slide.svg" width="100%">
 
 					<aside class="notes">
 						<ul>
@@ -53,7 +57,7 @@
 					<h3>Folytonosság</h3>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
-							<pre><code data-trim data-noescape style="font-size: 0.6em;">
+							<pre><code data-trim data-noescape width="100%">
 `hass_entry("sensor","temperature","0x00124b0029204309")`
 `hass_select_data`
 | bin span=1m _time
@@ -61,7 +65,7 @@
 | stats count by _time, value
 | makecontinuous _time span=1m
 							</code>
-							<table>
+							<table width="100%">
 								<tr>
 									<td>_time</td>
 									<td>value</td>
@@ -120,7 +124,7 @@
 							</table>
 						</div>
 						<div style="flex: 1; padding-left: 15px; box-sizing: border-box;">
-							<img src="../presentation/02_slide.svg">
+							<img src="../presentation/02_slide.svg" width="100%">
 						</div>
 						<aside class="notes">
 							<ul>
@@ -133,7 +137,7 @@
 				<section>
 					<h2>Lehetséges megoldások</h2>
 
-					<img src="../presentation/03_slide.svg">
+					<img src="../presentation/03_slide.svg" width="100%">
 					<aside class="notes">
 						<ul>
 							<li>Alapvető és gyorsításos módszerekkel a gond, hogy minden adatot mindig felkell olvasni</li>
@@ -147,8 +151,8 @@
 					</aside>
 				</section>
 				<section>
-					<h4>A fájl</h4>
-					<img src="../presentation/04_slide.svg" height="600vh" width="100%">
+					<h2>A fájl</h2>
+					<img src="../presentation/04_slide.svg" height="1250wh" width="100%">
 					<aside class="notes">
 						<ul>
 							<li>remélem ijesztő</li>
@@ -158,9 +162,9 @@
 					</aside>
 				</section>
 				<section>
-					<h3>Támogatott eloszlások</h3>
+					<h2>Támogatott eloszlások</h2>
 					<p>Elsőnek elemezzük ki ezt a részt:</p>
-					<img src="../presentation/05_slide.svg">
+					<img src="../presentation/05_slide.svg" width="100%">
 					<p>Most csak a normális eloszlással foglalkozunk.</p>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
@@ -189,7 +193,7 @@ codecs_manager.add_codec(
 							<img src="../presentation/06_slide.svg">
 						</div>
 					</div>
-					<pre><code data-trim data-noescape style="font-size: 0.7em;">
+					<pre><code data-trim data-noescape>
 def _fit_data(self, distribution, data, mlspl_limits):
 	"""Fit an instance of ProbabilityDistribution over data.
 	Warn if there are too few data points in the data array"""
@@ -214,10 +218,11 @@ def _fit_data(self, distribution, data, mlspl_limits):
 				<section>
 					<h2>FIT ág következtetései</h2>
 					<img src="../presentation/07_slide.svg">
-					<div style="display: flex; align-items: flex-start; width: 100%;">
-						<div style="flex: 1;">
-							<pre><code style="font-size: 0.7em;">
-`hass_entry("sensor","temperature","0x00124b0029204309")`
+					<div style="display: grid; grid-template-columns: auto auto auto;">
+						<div style="grid-column: 1 / span 2;">
+							<pre><code>
+`hass_entry("sensor","temperature",
+	"0x00124b0029204309")`
 `hass_select_data`
 `hass_fill_missing(80m)`
 | eval minutebin=strftime(_time,"%M")
@@ -225,7 +230,7 @@ def _fit_data(self, distribution, data, mlspl_limits):
 | eval bin=printf(hourbin."-".minutebin)
 | stats count by bin
 							</code></pre>
-							<table style="font-size: 0.5em;">
+							<table width="95%">
 								<tr>
 									<td>bin</td>
 									<td>count</td>
@@ -253,8 +258,8 @@ def _fit_data(self, distribution, data, mlspl_limits):
 					
 							</table>
 						</div>
-						<div style="flex: 1;">
-							<pre><code style="font-size: 0.7em;">
+						<div style="grid-column: 3;">
+							<pre width="50%"><code>
 `hass_entry("sensor","temperature","0x00124b0029197748")`
 `hass_select_data`
 `hass_fill_missing(80m)`
@@ -263,7 +268,7 @@ def _fit_data(self, distribution, data, mlspl_limits):
 | fit DensityFunction value by "hourbin,minutebin"
 dist=norm threshold=0.005
 							</code></pre>
-							<table style="font-size: 0.4em;">
+							<table max-width="50%">
 								<tr>
 									<td>_time</td>
 									<td>value</td>
@@ -296,7 +301,7 @@ dist=norm threshold=0.005
 									<td>0.0</td>
 									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
 								</tr>
-								<tr>
+<!--   								<tr>
 									<td>2025-05-12 20:00</td>
 									<td>22.94</td>
 									<td>0</td>
@@ -352,6 +357,7 @@ dist=norm threshold=0.005
 									<td>0.0</td>
 									<td>-Infinity:19.5733:0.0025<br>29.5814:Infinity:0.0025</td>
 								</tr>
+-->
 							</table>						</div>
 					</div>
 					<aside class="notes">
@@ -365,23 +371,48 @@ dist=norm threshold=0.005
 					</aside>					
 				</section>
 				<section>
-					<h1>Konfiguráció</h1>
+					<h2>Konfiguráció</h2>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
-							<img src="../notes/204_01_mltksettings.png" style="width: 100%;">
+							<img src="../notes/204_01_mltksettings.png" width="90%" height="90%">
 						</div>
 						<div style="flex: 1;">
 							<p>mlspl.conf</p>
-							<pre><code data-trim data-noescape style="font-size: 0.9em;">
+							<pre><code>
 [default]
 handle_new_cat = &lt;string&gt;
+
 max_distinct_cat_values = &lt;int&gt;
+
+max_distinct_cat_values_for_classifiers = &lt;int&gt;
+
+max_distinct_cat_values_for_scoring = &lt;int&gt;
+
+max_fit_time = &lt;int&gt;
+
+max_inputs = &lt;int&gt;
+
+max_memory_usage_mb = &lt;int&gt;
+
+max_model_size_mb = &lt;int&gt;
+
+max_score_time = &lt;int&gt;
+
+use_sampling = true|false
 ...
 [DensityFunction]
 default_prob_threshold = &lt;float&gt;
+
 max_fields_in_by_clause = &lt;int&gt;
+
 max_groups = &lt;int&gt;
 * defaults to 1024
+
+max_kde_parameter_size = &lt;int&gt;
+
+max_threshold_num = &lt;int&gt;
+
+min_data_size_to_fit = &lt;int&gt;
 ...
 [score:pairwise]
 max_fields = &lt;int&gt;
@@ -389,47 +420,315 @@ max_fields = &lt;int&gt;
 							</code></pre>
 						</div>
 					</div>
+					<aside class="notes">
+						<ul>
+							<li>Nincsen minden beállítás kivezetve a felületre</li>
+							<li>Egy komoly probléma a max_groups, mivel emiatt sok kisebb modellt kell építeni</li>
+							<li>Van lehetőségünk viszonylag finoman hangolni a RAM használatot</li>
+						</ul>
+					</aside>	
 				</section>
 				<section>
-					<h4>| apply</h4>
-					<div style="display: flex; align-items: flex-start; width: 100%;">
-						<div style="flex: 1;">
-							<pre class="mermaid">
-								graph TB
-									A[DensityFunction Class]
-									
-									A --> F[Main Methods]
-									F --> F3[apply]
-									
-									
-									F3 --> H[Output Generation]
-									H --> H1[IsOutlier]
-									H --> H2[BoundaryRanges]
-									H --> H3[ProbabilityDensity]
-									H --> H4[SampledValue]
-							</pre>
+					<h2>| apply</h2>
+					<div style="display: grid; grid-template-columns: auto,auto; ">
+						<div style="grid-column: 1 / span 2;">
+							<img src="../presentation/10_slide.svg">
 						</div>
-						<div style="flex: 1;">
-							<img src="../notes/205_01_apply.png">
+						<div style="grid-column: 1; grid-row: 2;">
+							<pre><code>
+`hass_entry("sensor","temperature","0x00124b0029197748")`
+`hass_select_data`
+`hass_fill_missing(80m)`
+| eval minutebin=strftime(_time,"%M")
+| eval hourbin=strftime(_time,"%H") 
+| apply app:sensor_temperature_0x00124b0029197748
+	threshold=0.005
+							</code></pre>
+						</div>
+						<div style="grid-column: 2; grid-row: 2;">
+							<table style="font-size: x-large;">
+								<thead>
+									<tr>
+										<th>_time</th>
+										<th>value</th>
+										<th>minutebin</th>
+										<th>hourbin</th>
+										<th>IsOutlier(value)</th>
+										<th>BoundaryRanges</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.53</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.55</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.6</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.62</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.64</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+	<!--								<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.65</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.68</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.76</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.77</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.8</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>23.88</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>-Infinity:18.2177:0.0025<br>28.1447:Infinity:0.0025</td>
+									</tr>
+-->								</tbody>
+							</table>
 						</div>
 					</div>
+					<aside class="notes">
+						<ul>
+							<li>Az apply alkalmazza a modellt, amit a fit-tel tanítottunk</li>
+							<li>Az eredménye hasonlít, amit az SPL vissza köp</li>
+							<li>Azért hasonlít, mert akkor leelenrőzi</li>
+							<li>streaming command</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h3>| apply</h3>
-					<img src="../notes/205_02_apply.png">
-					<img src="../notes/205_03_normalpdf.png">
+					<div style="display: grid; grid-template-columns: auto,auto; ">
+						<div style="grid-column: 1 / span 2; grid-row: 1;">
+							<img src="../notes/205_03_normalpdf.png">
+						</div>
+						<div style="grid-column: 1; grid-row: 2;">
+							<pre><code>
+`hass_entry("sensor","temperature",
+	"0x00124b0029197748")`
+`hass_select_data`
+`hass_fill_missing(80m)`
+| eval minutebin=strftime(_time,"%M")
+| eval hourbin=strftime(_time,"%H") 
+| apply app:sensor_temperature_0x00124b0029197748
+	threshold=0.005
+| eval leftRange=mvindex(BoundaryRanges,0), 
+	rightRange=mvindex(BoundaryRanges, 1)
+| rex field=leftRange &quot;-Infinity:(?&lt;lowerBound&gt;[^:]*):*&quot;
+| rex field=rightRange &quot;(?&lt;upperBound&gt;[^:]*):Infinity&quot;
+| eval lowerBound = case(lowerBound < 0, 0, 
+	lowerBound >=0, lowerBound)
+| fields - leftRange, rightRange, BoundaryRanges
+							</code></pre>
+						</div>
+						<div style="grid-column: 2; grid-row: 2;">
+							<table style="font-size: x-large;">
+								<thead>
+									<tr>
+										<th>_time</th>
+										<th>value</th>
+										<th>minutebin</th>
+										<th>hourbin</th>
+										<th>IsOutlier(value)</th>
+										<th>lowerBound</th>
+										<th>upperBound</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>2025-05-30 17:20</td>
+										<td>24.02</td>
+										<td>20</td>
+										<td>17</td>
+										<td>0.0</td>
+										<td>18.2177</td>
+										<td>28.1447</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.05</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.08</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.1</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.11</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.14</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.17</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+									<tr>
+										<td>2025-05-30 18:40</td>
+										<td>24.21</td>
+										<td>40</td>
+										<td>18</td>
+										<td>0.0</td>
+										<td>16.809</td>
+										<td>30.0833</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<aside class="notes">
+						<ul>
+							<li>Igazából a konfidencia intervallumot használjuk ki</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h3>Vizualizáció</h3>
 					<img src="../notes/206_01_viz.png">
+					<aside class="notes">
+						<ul>
+							<li>MLTK jön valamennyi vizualizációs eszközzel</li>
+							<li>sárga pötty outlier</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
 					<h3>Predikció</h3>
-					<img src="../notes/206_02_pred.png">
-					<img src="../notes/206_03_pred_dashboard.png">
+					<div style="display: grid; grid-template-columns: auto,auto; ">
+						<div style="grid-column: 1; grid-row: 1;">
+							<pre><code>
+`hass_entry("sensor","temperature",
+	"0x00124b0029197748")`
+`hass_select_data`
+`hass_fill_missing(80m)`
+| append [
+  | makeresults count=18
+  | streamstats count as tmp
+  | eval _time = _time + tmp*60*80
+  | eval value = -99
+  | fields - tmp
+  | bin span=80m _time
+]
+`hass_model_apply("sensor","temperature",
+	"0x00124b0029197748",0.005)`
+| eval value=if(value==-99,null(),value)
+| sort 0 _time
+| fields + _time, value, lowerBound, 
+	upperBound
+							</code></pre>
+						</div>
+						<div style="grid-column: 2; grid-row: 1;">
+							<img src="../notes/206_03_pred_dashboard.png">
+						</div>
+					</div>
+					<aside class="notes">
+						<ul>
+							<li>pred: múltbéli események mintája alapján mi lehet a jövőben</li>
+							<li>Jelenleg követi a mintát</li>
+							<li>Itt látszódik, hogy a trendet benne külön kellene kezelni</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h3>Threshold paraméter</h3>
+					<h2>Threshold paraméter</h2>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 							<p>$\alpha=0.05$</p>
@@ -440,256 +739,141 @@ max_fields = &lt;int&gt;
 							<img src="../notes/207_02_thershold_01.png">
 						</div>
 					</div>
+					<aside class="notes">
+						<ul>
+							<li>Többször említettem a konfidencia intervallumot</li>
+							<li>A becsült érték körüli környezetnek a méretét hívjuk ennek</li>
+							<li>Jelen esetben az átlag körülit, más eloszlás esetén ez nem biztos, hogy igaz</li>
+							<li>NE keverjük össze a szórással</li>
+							<li>Akkor fogunk riasztani, ha az "x"-re olyan érték kerül, ami nem kétszer színezett alatt van</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h4>Használat</h4>
-					<pre class="mermaid">
-					graph TB
-						hasss_build_model_furdo[["`hasss_build_model_furdo
-												20 1 * * *`"]];
-						hasss_build_model_halo[["`hasss_build_model_halo
-												40 2 2,4.. * *`"]];
-						hasss_build_model_konyha[["`hasss_build_model_konyha
-													0 4 3,6... * *`"]];
-						hasss_build_model_dolgozo[["`hasss_build_model_dolgozo
-													20 5 4,8... * *`"]];
-						hass_build_model{{"`hass_build_model`"}};
-						hass_entry>"`hass_entry`"];
-						hass_select_data>"`hass_select_data`"];
-						hass_fill_missing>"`hass_fill_missing`"];
-						hass_model_builder>"`hass_model_builder`"];
-
-						hass_build_model --> hasss_build_model_furdo;
-						hass_build_model ---> hasss_build_model_halo;
-						hass_build_model ----> hasss_build_model_konyha;
-						hass_build_model -----> hasss_build_model_dolgozo;
-						hass_entry --> hass_build_model;
-						hass_select_data --> hass_build_model;
-						hass_fill_missing --> hass_build_model;
-						hass_model_builder --> hass_build_model;						
-					</pre>
+					<h2>Használat</h2>
+					<img src="../presentation/15_slide.svg" width="80%" height="80%">
+					<aside class="notes">
+						<ul>
+							<li>Álmos könyv szerint érdemes a hosszabb kereséseket időben eloszlatni, és ez technikailag keresés</li>
+							<li>Egyébként ez kifejezetten gyors a kezdeti feltöltés után, hála a partial_fit-nek</li>
+							<li>Mivel 1 modell építés kódja még akkor is, ha nem SPL bonyolult, érdemes generalizálni és részekre bontani</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h3>Model építés példák</h3>
-							<pre><code  data-trim data-noescape style="font-size: 0.9em;">
+					<h2>Model építés példák</h2>
+					<pre><code  data-trim data-noescape>
+						
 [hass_build_model]
 search = `hass_entry("$domain$","$class$","$entity$")`\
 `hass_select_data`\
 `hass_fill_missing($span$m)`\
 `hass_model_builder("$domain$","$class$","$entity$",$threshold$)`
 							</code></pre>
-							<pre><code  data-trim data-noescape style="font-size: 0.9em;">
+							<pre><code  data-trim data-noescape>
 [hasss_build_model_dolgozo]
-cron_schedule = 20 5 */4 * *
-search = | savedsearch hass_build_model domain=sensor \
-class=temperature entity=0x00124b0029197748 threshold=0.005 span=80
+cron_schedule = 20 5 4,8,12,14,18,22,26,30 * *
+search = | savedsearch hass_build_model domain=sensor class=temperature entity=0x00124b0029197748 threshold=0.005 span=80
 enableSched = 1
 schedule_window = auto
-							</code></pre>
+dispatch.earliest_time = -15d@m
+dispatch.latest_time = -0m@m
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>Egy példa a generikus használatra</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h4>Riasztás</h4>
+					<h2>Riasztás</h2>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 
-							<pre class="mermaid">
-								graph TB
-									decision_1{"`Milyen
-												sűrű a 
-												modellünk?`"}
-									hystering["Hiszterizálás"];
-									threshold["Magas threshold"];
-
-									decision_1 --"Eléggé<br>(legalább félóránként)"--> hystering;
-									decision_1 --"Több, mint félóránként van<br>1 adatpont"--> threshold;
-							</pre>
+							<img src="../presentation/17_slide.svg">
 						</div>
 						<div style="flex: 1;">
 							<img src="../notes/208_01_correct_alert_threshold.png">
 						</div>
 					</div>
+					<aside class="notes">
+						<ul>
+							<li>A kérdés, hogy mire riasszunk?</li>
+							<li>Minél kevesebb fase postitivet akarunk, de a true postitive NEM maradhat ki</li>
+							<li>hiszterizálás = detektálunk 1 gyanúsat (időben balról jobbra) és végig nézzük, hogy hány gyanús van</li>
+							<il>magas threshold -> nagyon magabiztosak vagyunk a modell eredményében</il>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h3>Riasztás gráf</h3>
-					<pre class="mermaid">
-						graph TB
-							HASS_Erkely_Outler[["`HASS Erkely Outler
-												10,30,50 * * * *
-												-90m@m -10m@m
-												cnt=0`"]];
-							HASS_Konyha_Outler[["`HASS Konyha Outler
-												10,30,50 * * * *
-												-90m@m -10m@m
-												cnt=0`"]];
-							HASS_furdo_Outler[["`HASS furdo Outler
-												10,30,50 * * * *
-												-90m@m -10m@m
-												cnt=0`"]];
-							HASS_halo_Outler[["`HASS halo Outler
-												10,30,50 * * * *
-												-90m@m -10m@m
-												cnt=0`"]];
-							HASS_Dolgozo_Outler[["`ASS Dolgozo Outler
-												10,30,50 * * * *
-												-90m@m -10m@m
-												cnt=0`"]];
-							hass_apply_modell{{"`hass_apply_modell`"}};
-							hass_entry>"`hass_entry`"];
-							hass_select_data>"`hass_select_data`"];
-							hass_fill_missing>"`hass_fill_missing`"];
-							hass_model_apply_extend_pred>"`hass_model_apply_extend_pred`"];
-							hass_model_apply>"`hass_model_apply`"];
-							hass_clean_pred>"`hass_clean_pred`"]
-
-							hass_entry --> hass_apply_modell;
-							hass_select_data --> hass_apply_modell;
-							hass_fill_missing --> hass_apply_modell;
-							hass_model_apply_extend_pred --> hass_apply_modell;
-							hass_model_apply --> hass_apply_modell;
-							hass_clean_pred --> hass_apply_modell;
-							hass_apply_modell --> HASS_Erkely_Outler;
-							hass_apply_modell ---> HASS_Konyha_Outler;
-							hass_apply_modell ----> HASS_furdo_Outler;
-							hass_apply_modell -----> HASS_halo_Outler;
-							hass_apply_modell ------> HASS_Dolgozo_Outler;
-					</pre>
+					<h2>Riasztás gráf</h2>
+					<img src="../presentation/18_slide.svg" width="80%" height="80%">
+					<aside class="notes">
+						<ul>
+							<li>Ahogyan említettem az álmos könyv szerint nem érdemes ugyan akkor indítani riasztásokat</li>
+							<li>Viszont az ML gyors, ha tudjuk, hogy mit akarunk, egyszerűen gondolkozás nélkül megtehetjük</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h3>Mire lehet még használni?</h3>
-					<pre class="mermaid">
-						flowchart LR
-							log_count["logok darabszáma"];
-							firewall>"tűzfal"];
-							EDR>"EDR"];
-							email>"email"];
-							db_query>"Adatbázis kérések"];
-							rest>"Rest Api kérések"];
-							event_lenght["Események hossza"];
-							session>"sessionok"];
-							CPU_usage>"CPU használat"];
-							ticket>"hiba bejelentések"];
-
-							firewall --> log_count;
-							EDR --> log_count;
-							email --> log_count;
-							db_query --> log_count;
-							rest --> log_count;
-							session --> log_count;
-							ticket --> log_count;
-
-							db_query --> event_lenght;
-							CPU_usage --> event_lenght;
-							session --> event_lenght;
-					</pre>
+					<h2>Mire lehet még használni?</h2>
+					<img src="../presentation/19_slide.svg">
+					<aside class="notes">
+						<ul>
+							<li>logok darabszáma értékes és nagy mennyiségű általában -> normális eloszlás</li>
+							<li>Sokszor volátilisebb a hossz, de normális szerű Student féle T-vel remekül modellezhető</li>
+						</ul>
+					</aside>
 				</section>
 				<section>
-					<h4>MLTK felhasználásai</h4>
-					<pre class="mermaid">
-						mindmap
-							root((MLTK))
-								Adat előkészítés
-								Adatelemzés
-								Kluszterizálás
-								Előrejelzés
-								Pontbecslés
-								Outlier detektálás
-					</pre>
+					<section>
+						<h1>Köszönöm a figyelmet</h1>
+					</section>
+						<section>
+							<h1>Kérdések?</h1>
+						</section>
+						<section>
+							<h1>Demó</h1>
+						</section>
+						<section>
+							<h1>Szavazás</h1>
+							<h2>Legyen második rész?</h2>
+							<h2>Ez előadás elnyerte a közönség elismerését?</h2>
+						</section>
+						<section>
+							<h1>Források, kódok</h1>
+							<img src="../presentation/20_5_github.svg">
+						</section>
 				</section>
 				<section>
-					<h3>MLTK felhasználásai</h3>
-					<h4>Adat előkészítés</h4>
-					<pre class="mermaid">
-						mindmap
-							root(Adat előkészítés)
-								Preprocesing
-									Imputer
-									Robust Scaler
-									Standard Scaler
-								Feature Extraction
-									lineáris
-									PCA
-									HashingVectorizer
-									ICA
-									nem-lineáris
-									KernelPCA
-									TFIDF
-									NPR
-					</pre>
+					<h2>MLTK felhasználásai</h2>
+					<img src="../presentation/21_slide.svg">
 				</section>
 				<section>
-					<h3>MLTK felhasználásai</h3>
-					<h4>Adat elemzés és előrejelzés</h4>
-					<pre class="mermaid">
-						mindmap
-						root(Idősor elemzés)
-							Adatelemzés
-								Autocorrelation function
-								Partial autocorrelation Function
-							Előrejelzés
-								ARIMA
-								KalmanFilter
-								StateSpaceForecast
-					</pre>
+					<h2>MLTK felhasználásai</h2>
+					<h3>Adat előkészítés</h3>
+					<img src="../presentation/22_slide.svg">
 				</section>
 				<section>
-					<h3>MLTK felhasználásai</h3>
-					<h4>Minta elemzés</h4>
-					<pre class="mermaid">
-						mindmap
-							root(Minta elemzés)
-								Kluszterizálás
-									Partíció alapú - XMeans
-									Távolság alapú -KMeans		
-									Gráf alapú - SpectralClustering
-									Hiearhia alapú - Birch
-									Sűrűség alapú - DBSCAN
-								Outlier detektálás
-								DensityFunction
-								LocalOutlierFactor
-								OneClassSVM
-					</pre>
+					<h2>MLTK felhasználásai</h2>
+					<h3>Adat elemzés és előrejelzés</h3>
+					<img src="../presentation/23_slide.svg" width="75%" height="75%">
+				</section>
+				<section>
+					<h2>MLTK felhasználásai</h2>
+					<h3>Minta elemzés</h3>
+					<img src="../presentation/24_slide.svg">
 
 				</section>
 				<section>
-					<h3>MLTK felhasználásai</h3>
-					<h4>Regressziók - Számokra</h4>
-					<pre class="mermaid">
-						mindmap
-							root(Szám-regresszió)
-								Lineáris
-									LinearRegression
-									Ridge
-									Lasso
-									ElasticNet
-									SDGRegressor
-								Nem-lineárs
-									Fa alapú
-										DecisionTree
-										GradientBoosting
-										RandomForest
-									Kernel alapú
-										KernelRidge
-					</pre>
+					<h2>MLTK felhasználásai</h2>
+					<h3>Regressziók - Számokra</h3>
+					<img src="../presentation/25_slide.svg">
 				</section>
 				<section>
-					<h3>MLTK felhasználásai</h3>
-					<h4>Címkéző algoritmusok</h4>
-					<pre class="mermaid">
-						mindmap
-							root(Osztály-klasszifikáló)
-								Lineáris
-									LogisticRegression
-									SGD
-									SVM
-								Naive bayes
-									BernoulliNB
-									GaussianNB
-								Fa alapú
-									DecisionTree
-									GradientBoosting
-									RandomForest
-								Neurális háló - MLP
-					</pre>
+					<h2>MLTK felhasználásai</h2>
+					<h3>Címkéző algoritmusok</h3>
+					<img src="../presentation/26_slide.svg">
 				</section>
 			</div>
 		</div>
@@ -722,14 +906,15 @@ schedule_window = auto
 			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
-				width: 960,
-  				height: 700,
+				width: 1920,
+  				height: 1400,
 				slideNumber: true,
 				preloadIframes: true,
 				margin: 0.04,
 				minScale: 0.2,
  				maxScale: 1.0,
 				center: true,
+				navigationMode: 'default',
 				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
 			});
