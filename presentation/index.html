@@ -26,6 +26,7 @@
 			code {
 				overflow: hidden !important;
 				max-height: none !important;
+				font-size: 2rem;
 			}
 		</style>
 	</head>
@@ -48,24 +49,43 @@
 
 					<aside class="notes">
 						<ul>
-							<li></li>
+							<li>szeretnék értesülni arról, ha valami olyan váratlan esemény van, amit a múltbéli megfigyelések nem látnak</li>
 						</ul>
 					</aside>
 				</section>
+
+				<section>
+					<h2>Lehetséges megoldások</h2>
+
+					<img src="../presentation/03_slide.svg" width="100%">
+					<aside class="notes">
+						<ul>
+							<li>Alapvető és gyorsításos módszerekkel a gond, hogy minden adatot mindig felkell olvasni</li>
+							<li>streaming jó megoldás, nagyon, de bonyolult és kicsi a flexibilitás, lásd Dataflow model és Apache Beam/Flink</li>
+							<ul>
+								<li>Splunkban summary indexekkel tudunk ilyeneket</li>
+							</ul>
+							<li>Mi az MLTK-ról fogunk beszélni</li>
+							<li>A legésszerűbb megoldás több ötlet kombinációja lenne</li>
+						</ul>
+					</aside>
+				</section>
+
 				<section>
 					<h2>Előfeltélek</h2>
 					<h3>Folytonosság</h3>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 							<pre><code data-trim data-noescape width="100%">
-`hass_entry("sensor","temperature","0x00124b0029204309")`
+`hass_entry("sensor","temperature",
+	"0x00124b0029204309")`
 `hass_select_data`
 | bin span=1m _time
 | where value!="unavailable"
 | stats count by _time, value
 | makecontinuous _time span=1m
 							</code>
-							<table width="100%">
+							<table width="100%" style="font-size: 2.5rem;">
 								<tr>
 									<td>_time</td>
 									<td>value</td>
@@ -130,26 +150,12 @@
 							<ul>
 								<li>A nullokon nem tudunk műveleteket végezni</li>
 								<li>Valahogyan kezelni kell</li>
+								<li>Azért hiányoznak, mert nincsenek ott mérési értékek</li>
 							</ul>
 						</aside>
 					</div>
 				</section>
-				<section>
-					<h2>Lehetséges megoldások</h2>
 
-					<img src="../presentation/03_slide.svg" width="100%">
-					<aside class="notes">
-						<ul>
-							<li>Alapvető és gyorsításos módszerekkel a gond, hogy minden adatot mindig felkell olvasni</li>
-							<li>streaming jó megoldás, nagyon, de bonyolult és kicsi a flexibilitás, lásd Dataflow model és Apache Beam/Flink</li>
-							<ul>
-								<li>Splunkban summary indexekkel tudunk ilyeneket</li>
-							</ul>
-							<li>Mi az MLTK-ról fogunk beszélni</li>
-							<li>A legésszerűbb megoldás több ötlet kombinációja lenne</li>
-						</ul>
-					</aside>
-				</section>
 				<section>
 					<h2>A fájl</h2>
 					<img src="../presentation/04_slide.svg" height="1250wh" width="100%">
@@ -187,7 +193,7 @@ codecs_manager.add_codec(
 					</aside>
 				</section>
 				<section>
-					<h2>fit ág</h2>
+					<h2>| fit ág</h2>
 					<div style="display: flex; align-items: flex-start; width: 100%;">
 						<div style="flex: 1;">
 							<img src="../presentation/06_slide.svg">
@@ -212,11 +218,12 @@ def _fit_data(self, distribution, data, mlspl_limits):
 							<li>látszódik, hogy > 50 adatpont kell</li>
 							<li>ez nekünk 80m-es csoportosítást fog jelenteni</li>
 							<li>a fit állítja elő a modellt, amit lefogunk menteni</li>
+							<li>otuler, mint kirívó érték, az anomália, amit keresünk</li>
 						</ul>
 					</aside>
 				</section>
 				<section>
-					<h2>FIT ág következtetései</h2>
+					<h2>|fit ág következtetései</h2>
 					<img src="../presentation/07_slide.svg">
 					<div style="display: grid; grid-template-columns: auto auto auto;">
 						<div style="grid-column: 1 / span 2;">
@@ -268,7 +275,7 @@ def _fit_data(self, distribution, data, mlspl_limits):
 | fit DensityFunction value by "hourbin,minutebin"
 dist=norm threshold=0.005
 							</code></pre>
-							<table max-width="50%">
+							<table max-width="50%" style="font-size: 2.0rem;">
 								<tr>
 									<td>_time</td>
 									<td>value</td>
@@ -430,7 +437,7 @@ max_fields = &lt;int&gt;
 				</section>
 				<section>
 					<h2>| apply</h2>
-					<div style="display: grid; grid-template-columns: auto,auto; ">
+					<div style="display: grid; grid-template-columns: 1fr auto; ">
 						<div style="grid-column: 1 / span 2;">
 							<img src="../presentation/10_slide.svg">
 						</div>
@@ -560,139 +567,166 @@ max_fields = &lt;int&gt;
 					</aside>
 				</section>
 				<section>
-					<h3>| apply</h3>
-					<div style="display: grid; grid-template-columns: auto,auto; ">
-						<div style="grid-column: 1 / span 2; grid-row: 1;">
-							<img src="../notes/205_03_normalpdf.png">
+					<section>
+						<h2>| apply</h2>
+						<div style="display: grid; grid-template-columns: 1fr auto; ">
+							<div style="grid-column: 1 / span 2; grid-row: 1;">
+								<img src="../notes/205_03_normalpdf.png" style="width: 100%;">
+							</div>
+							<div style="grid-column: 1; grid-row: 2;">
+								<pre><code>
+	`hass_entry("sensor","temperature",
+		"0x00124b0029197748")`
+	`hass_select_data`
+	`hass_fill_missing(80m)`
+	| eval minutebin=strftime(_time,"%M")
+	| eval hourbin=strftime(_time,"%H") 
+	| apply app:sensor_temperature_0x00124b0029197748
+		threshold=0.005
+	| eval leftRange=mvindex(BoundaryRanges,0), 
+		rightRange=mvindex(BoundaryRanges, 1)
+	| rex field=leftRange &quot;-Infinity:(?&lt;lowerBound&gt;[^:]*):*&quot;
+	| rex field=rightRange &quot;(?&lt;upperBound&gt;[^:]*):Infinity&quot;
+	| eval lowerBound = case(lowerBound < 0, 0, 
+		lowerBound >=0, lowerBound)
+	| fields - leftRange, rightRange, BoundaryRanges
+								</code></pre>
+							</div>
+							<div style="grid-column: 2; grid-row: 2;">
+								<table style="font-size: x-large;">
+									<thead>
+										<tr>
+											<th>_time</th>
+											<th>value</th>
+											<th>minutebin</th>
+											<th>hourbin</th>
+											<th>IsOutlier(value)</th>
+											<th>lowerBound</th>
+											<th>upperBound</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>2025-05-30 17:20</td>
+											<td>24.02</td>
+											<td>20</td>
+											<td>17</td>
+											<td>0.0</td>
+											<td>18.2177</td>
+											<td>28.1447</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.05</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.08</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.1</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.11</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.14</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.17</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+										<tr>
+											<td>2025-05-30 18:40</td>
+											<td>24.21</td>
+											<td>40</td>
+											<td>18</td>
+											<td>0.0</td>
+											<td>16.809</td>
+											<td>30.0833</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
-						<div style="grid-column: 1; grid-row: 2;">
-							<pre><code>
-`hass_entry("sensor","temperature",
-	"0x00124b0029197748")`
-`hass_select_data`
-`hass_fill_missing(80m)`
-| eval minutebin=strftime(_time,"%M")
-| eval hourbin=strftime(_time,"%H") 
-| apply app:sensor_temperature_0x00124b0029197748
-	threshold=0.005
-| eval leftRange=mvindex(BoundaryRanges,0), 
-	rightRange=mvindex(BoundaryRanges, 1)
-| rex field=leftRange &quot;-Infinity:(?&lt;lowerBound&gt;[^:]*):*&quot;
-| rex field=rightRange &quot;(?&lt;upperBound&gt;[^:]*):Infinity&quot;
-| eval lowerBound = case(lowerBound < 0, 0, 
-	lowerBound >=0, lowerBound)
-| fields - leftRange, rightRange, BoundaryRanges
-							</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>Igazából a konfidencia intervallumot használjuk ki</li>
+							</ul>
+						</aside>
+				</section>	
+				
+				<section>
+					<h2>Threshold paraméter</h2>
+					<div style="display: flex; align-items: flex-start; width: 100%;">
+						<div style="flex: 1;">
+							<p>$\alpha=0.05$</p>
+							<img src="../notes/207_01_thershold_005.png">
 						</div>
-						<div style="grid-column: 2; grid-row: 2;">
-							<table style="font-size: x-large;">
-								<thead>
-									<tr>
-										<th>_time</th>
-										<th>value</th>
-										<th>minutebin</th>
-										<th>hourbin</th>
-										<th>IsOutlier(value)</th>
-										<th>lowerBound</th>
-										<th>upperBound</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>2025-05-30 17:20</td>
-										<td>24.02</td>
-										<td>20</td>
-										<td>17</td>
-										<td>0.0</td>
-										<td>18.2177</td>
-										<td>28.1447</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.05</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.08</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.1</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.11</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.14</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.17</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-									<tr>
-										<td>2025-05-30 18:40</td>
-										<td>24.21</td>
-										<td>40</td>
-										<td>18</td>
-										<td>0.0</td>
-										<td>16.809</td>
-										<td>30.0833</td>
-									</tr>
-								</tbody>
-							</table>
+						<div style="flex: 1;">
+							<p>$\alpha=0.1$</p>
+							<img src="../notes/207_02_thershold_01.png">
 						</div>
 					</div>
 					<aside class="notes">
 						<ul>
-							<li>Igazából a konfidencia intervallumot használjuk ki</li>
+							<li>Többször említettem a konfidencia intervallumot</li>
+							<li>A becsült érték körüli környezetnek a méretét hívjuk ennek</li>
+							<li>Jelen esetben az átlag körülit, más eloszlás esetén ez nem biztos, hogy igaz</li>
+							<li>NE keverjük össze a szórással</li>
+							<li>Akkor fogunk riasztani, ha az "x"-re olyan érték kerül, ami nem kétszer színezett alatt van</li>
 						</ul>
 					</aside>
 				</section>
+
+				</section>
 				<section>
-					<h3>Vizualizáció</h3>
-					<img src="../notes/206_01_viz.png">
+					<h2>Vizualizáció</h2>
+					<img src="../notes/206_01_viz.png" style="width: 100%;">
 					<aside class="notes">
 						<ul>
 							<li>MLTK jön valamennyi vizualizációs eszközzel</li>
 							<li>sárga pötty outlier</li>
+							<li>A beszakadások adathibák, bizonyos esetkben pontosan 0-t jelent le</li>
 						</ul>
 					</aside>
 				</section>
 				<section>
-					<h3>Predikció</h3>
-					<div style="display: grid; grid-template-columns: auto,auto; ">
+					<h2>Predikció</h2>
+					<div style="display: grid; grid-template-columns: 1fr auto; ">
 						<div style="grid-column: 1; grid-row: 1;">
 							<pre><code>
 `hass_entry("sensor","temperature",
@@ -728,30 +762,8 @@ max_fields = &lt;int&gt;
 					</aside>
 				</section>
 				<section>
-					<h2>Threshold paraméter</h2>
-					<div style="display: flex; align-items: flex-start; width: 100%;">
-						<div style="flex: 1;">
-							<p>$\alpha=0.05$</p>
-							<img src="../notes/207_01_thershold_005.png">
-						</div>
-						<div style="flex: 1;">
-							<p>$\alpha=0.1$</p>
-							<img src="../notes/207_02_thershold_01.png">
-						</div>
-					</div>
-					<aside class="notes">
-						<ul>
-							<li>Többször említettem a konfidencia intervallumot</li>
-							<li>A becsült érték körüli környezetnek a méretét hívjuk ennek</li>
-							<li>Jelen esetben az átlag körülit, más eloszlás esetén ez nem biztos, hogy igaz</li>
-							<li>NE keverjük össze a szórással</li>
-							<li>Akkor fogunk riasztani, ha az "x"-re olyan érték kerül, ami nem kétszer színezett alatt van</li>
-						</ul>
-					</aside>
-				</section>
-				<section>
 					<h2>Használat</h2>
-					<img src="../presentation/15_slide.svg" width="80%" height="80%">
+					<img src="../presentation/15_slide.svg" width="75%" height="75%">
 					<aside class="notes">
 						<ul>
 							<li>Álmos könyv szerint érdemes a hosszabb kereséseket időben eloszlatni, és ez technikailag keresés</li>
@@ -802,6 +814,7 @@ dispatch.latest_time = -0m@m
 							<li>Minél kevesebb fase postitivet akarunk, de a true postitive NEM maradhat ki</li>
 							<li>hiszterizálás = detektálunk 1 gyanúsat (időben balról jobbra) és végig nézzük, hogy hány gyanús van</li>
 							<il>magas threshold -> nagyon magabiztosak vagyunk a modell eredményében</il>
+							<li>Például ha ég az erkély érdemes tudni róla</li>
 						</ul>
 					</aside>
 				</section>
@@ -816,7 +829,7 @@ dispatch.latest_time = -0m@m
 					</aside>
 				</section>
 				<section>
-					<h2>Mire lehet még használni?</h2>
+					<h2>Mire lehet még riasztani?</h2>
 					<img src="../presentation/19_slide.svg">
 					<aside class="notes">
 						<ul>
@@ -829,52 +842,54 @@ dispatch.latest_time = -0m@m
 					<section>
 						<h1>Köszönöm a figyelmet</h1>
 					</section>
-						<section>
+						<section data-visibility="uncounted">
 							<h1>Kérdések?</h1>
 						</section>
-						<section>
+						<section data-visibility="uncounted">
 							<h1>Demó</h1>
 						</section>
-						<section>
+						<section data-visibility="uncounted">
 							<h1>Szavazás</h1>
 							<h2>Legyen második rész?</h2>
 							<h2>Ez előadás elnyerte a közönség elismerését?</h2>
 						</section>
-						<section>
+						<section data-visibility="uncounted">
 							<h1>Források, kódok</h1>
 							<img src="../presentation/20_5_github.svg">
 						</section>
 				</section>
-				<section>
+				<section data-visibility="uncounted">
+				<section data-visibility="uncounted">
 					<h2>MLTK felhasználásai</h2>
 					<img src="../presentation/21_slide.svg">
 				</section>
-				<section>
+				<section data-visibility="uncounted">
 					<h2>MLTK felhasználásai</h2>
 					<h3>Adat előkészítés</h3>
 					<img src="../presentation/22_slide.svg">
 				</section>
-				<section>
+				<section data-visibility="uncounted">
 					<h2>MLTK felhasználásai</h2>
 					<h3>Adat elemzés és előrejelzés</h3>
 					<img src="../presentation/23_slide.svg" width="75%" height="75%">
 				</section>
-				<section>
+				<section data-visibility="uncounted">
 					<h2>MLTK felhasználásai</h2>
 					<h3>Minta elemzés</h3>
 					<img src="../presentation/24_slide.svg">
 
 				</section>
-				<section>
+				<section data-visibility="uncounted">
 					<h2>MLTK felhasználásai</h2>
 					<h3>Regressziók - Számokra</h3>
 					<img src="../presentation/25_slide.svg">
 				</section>
-				<section>
+				<section data-visibility="uncounted">
 					<h2>MLTK felhasználásai</h2>
 					<h3>Címkéző algoritmusok</h3>
 					<img src="../presentation/26_slide.svg">
 				</section>
+			</section>
 			</div>
 		</div>
 
@@ -906,8 +921,8 @@ dispatch.latest_time = -0m@m
 			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
-				width: 1920,
-  				height: 1400,
+				width: 2160,
+  				height: 1500,
 				slideNumber: true,
 				preloadIframes: true,
 				margin: 0.04,
